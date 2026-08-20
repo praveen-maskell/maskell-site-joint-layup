@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+.env.local
+.env*.local
+.vercel
+*.log
+.DS_Store
+public/sw.js
+public/workbox-*.js

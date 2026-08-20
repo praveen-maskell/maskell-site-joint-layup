@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+}
+
+html, body {
+  background-color: #101418;
+  color: #f7f5f1;
+  overscroll-behavior-y: none;
+}
+
+/* Respect iOS/Android safe areas so sticky nav never sits under the home bar */
+.min-h-touch { min-height: 3.25rem; }
+
+body {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+input, select, textarea {
+  font-size: 16px; /* prevents iOS auto-zoom on focus */
+}
