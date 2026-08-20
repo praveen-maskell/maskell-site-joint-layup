@@ -1,10 +1,13 @@
 import { Resend } from "resend";
 import type { SubmissionPdfData } from "@/lib/pdf";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function sendSiteJointEmail(d: SubmissionPdfData, recipients: string[], pdfBuffer: Buffer) {
   if (!recipients.length) return;
+  if (!process.env.RESEND_API_KEY) {
+    console.error("RESEND_API_KEY not set — skipping email send.");
+    return;
+  }
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   const inspectionResult = d.inspections.some((i) => i.result === "DEFECT") ? "DEFECT(S) RECORDED" : "ALL OK";
 
