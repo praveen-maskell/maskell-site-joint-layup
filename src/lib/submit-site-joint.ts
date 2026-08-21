@@ -105,11 +105,24 @@ export async function submitSiteJoint(data: WizardState) {
   if (data.tack_detail.trim()) {
     stepsToSave.push({
       step_no: stepNo++, step_label: "Construction Details - Tack", detail: data.tack_detail,
-      width_mm: data.tack_width_mm ? Number(data.tack_width_mm) : null, position: null,
+      width_mm: null, position: null,
     });
   }
   data.construction_stages.forEach((s, idx) => {
-    if (s.detail && s.detail.trim()) {
+    if (s.position === "Both") {
+      if (s.internal_detail && s.internal_detail.trim()) {
+        stepsToSave.push({
+          step_no: stepNo++, step_label: `Construction Details - Stage ${idx + 1} (Internal)`, detail: s.internal_detail,
+          width_mm: null, position: "Internal",
+        });
+      }
+      if (s.external_detail && s.external_detail.trim()) {
+        stepsToSave.push({
+          step_no: stepNo++, step_label: `Construction Details - Stage ${idx + 1} (External)`, detail: s.external_detail,
+          width_mm: null, position: "External",
+        });
+      }
+    } else if (s.detail && s.detail.trim()) {
       stepsToSave.push({
         step_no: stepNo++, step_label: `Construction Details - Stage ${idx + 1}`, detail: s.detail,
         width_mm: null, position: s.position || null,

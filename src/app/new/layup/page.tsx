@@ -7,7 +7,7 @@ import { TextField } from "@/components/ui/TextField";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { WizardNav } from "@/components/wizard/WizardNav";
 import {
-  JOINT_PREP_OPTIONS, TACK_DETAIL_OPTIONS, CONSTRUCTION_LAYUP_OPTIONS, FINISH_DETAIL_OPTIONS,
+  JOINT_PREP_OPTIONS, CONSTRUCTION_LAYUP_OPTIONS, FINISH_DETAIL_OPTIONS,
   CONSTRUCTION_POSITIONS, MAX_CONSTRUCTION_STAGES, FLOCOAT_COLOURS,
 } from "@/lib/constants";
 
@@ -75,12 +75,19 @@ export default function LayupStep() {
 
   function validate() {
     const stage1 = data.construction_stages[0];
-    if (!stage1?.position || !stage1?.detail?.trim()) {
-      alert("Construction Details — Stage 1 needs a Position and Layup selected.");
+    if (!stage1?.position) {
+      alert("Construction Details — Stage 1 needs a Position selected.");
       return false;
     }
-    if (data.tack_detail.trim() && !data.tack_width_mm) {
-      alert("Enter the Tack Width — required once a Tack layup is selected.");
+    const stage1Complete = stage1.position === "Both"
+      ? !!stage1.internal_detail?.trim() && !!stage1.external_detail?.trim()
+      : !!stage1.detail?.trim();
+    if (!stage1Complete) {
+      alert(
+        stage1.position === "Both"
+          ? "Construction Details — Stage 1 needs both an Internal and External Layup."
+          : "Construction Details — Stage 1 needs a Layup selected."
+      );
       return false;
     }
     const finishIsOther = data.finish_detail && !FINISH_DETAIL_OPTIONS.includes(data.finish_detail);
@@ -110,11 +117,7 @@ export default function LayupStep() {
 
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
         <span className="font-semibold text-paper">Construction Details - Tack</span>
-        <DetailPicker label="Layup" value={data.tack_detail} predefined={TACK_DETAIL_OPTIONS} onChange={(v) => set("tack_detail", v)} />
-        <NumericField
-          label="Width" unit="mm" required={!!data.tack_detail.trim()}
-          value={data.tack_width_mm} onChange={(v) => set("tack_width_mm", v)}
-        />
+        <DetailPicker label="Layup" value={data.tack_detail} predefined={CONSTRUCTION_LAYUP_OPTIONS} otherLabel="Stage Number" onChange={(v) => set("tack_detail", v)} />
       </div>
 
       <div className="space-y-3">
@@ -128,13 +131,26 @@ export default function LayupStep() {
               <SegmentedControl
                 options={CONSTRUCTION_POSITIONS}
                 value={stage.position}
-                onChange={(v) => updateConstructionStage(stage.stage_no, { position: v, detail: v === "Both" ? null : stage.detail })}
+                onChange={(v) => updateConstructionStage(stage.stage_no, { position: v })}
               />
             </div>
             {stage.position === "Both" ? (
-              <p className="text-paper/50 text-sm bg-ink rounded-lg p-3">
-                A single Layup can't be assigned when Position is "Both" — choose Internal or External to record a Layup for this stage.
-              </p>
+              <>
+                <DetailPicker
+                  label="Internal Layup"
+                  value={stage.internal_detail ?? ""}
+                  predefined={CONSTRUCTION_LAYUP_OPTIONS}
+                  otherLabel="Stage Number"
+                  onChange={(v) => updateConstructionStage(stage.stage_no, { internal_detail: v })}
+                />
+                <DetailPicker
+                  label="External Layup"
+                  value={stage.external_detail ?? ""}
+                  predefined={CONSTRUCTION_LAYUP_OPTIONS}
+                  otherLabel="Stage Number"
+                  onChange={(v) => updateConstructionStage(stage.stage_no, { external_detail: v })}
+                />
+              </>
             ) : (
               <DetailPicker
                 label="Layup"

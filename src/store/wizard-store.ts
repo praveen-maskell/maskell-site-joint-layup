@@ -26,8 +26,7 @@ function emptyState(): WizardState {
     glass_batch_no: "",
     joint_prep_detail: "",
     tack_detail: "",
-    tack_width_mm: "",
-    construction_stages: [{ stage_no: 1, position: "", detail: null }],
+    construction_stages: [{ stage_no: 1, position: "", detail: null, internal_detail: null, external_detail: null }],
     finish_detail: "",
     finish_width_mm: "",
     flocoat: false,
@@ -97,7 +96,7 @@ export const useWizardStore = create<WizardStore>()(
               ...s.data,
               construction_stages: [
                 ...s.data.construction_stages,
-                { stage_no: nextNo, position: "", detail: null },
+                { stage_no: nextNo, position: "", detail: null, internal_detail: null, external_detail: null },
               ],
             },
           };

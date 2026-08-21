@@ -29,7 +29,6 @@ export const MAX_CONSTRUCTION_STAGES = 5;
 // "Other" is offered alongside most of these as a free-text fallback
 // (Check Joint Preparation is the one exception — no "Other" there).
 export const JOINT_PREP_OPTIONS = ["Grind & Clean OK"];
-export const TACK_DETAIL_OPTIONS = ["Tack Coat Resin", "Chopped Strand Mat Tack", "Surfacing Veil"];
 export const CONSTRUCTION_LAYUP_OPTIONS = ["Stage 1", "Stage 2", "Stage 3", "Stage 4"];
 export const FINISH_DETAIL_OPTIONS = ["Resin Rich Finish", "Surfacing Veil + Topcoat", "Sanded Smooth"];
 

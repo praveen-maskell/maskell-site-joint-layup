@@ -26,7 +26,9 @@ export interface Personnel {
 export interface ConstructionStage {
   stage_no: number;
   position: ConstructionPosition | "";
-  detail: string | null;
+  detail: string | null;          // used when position is Internal or External
+  internal_detail: string | null; // used when position is Both
+  external_detail: string | null; // used when position is Both
 }
 
 // A saved layup step record as read back from the database (PDF/admin views).
@@ -75,7 +77,6 @@ export interface WizardState {
   // LAYUP
   joint_prep_detail: string;
   tack_detail: string;
-  tack_width_mm: string;
   construction_stages: ConstructionStage[];
   finish_detail: string;
   finish_width_mm: string;

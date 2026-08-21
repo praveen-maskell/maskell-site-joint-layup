@@ -1,5 +1,6 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
+import { ResendButton } from "@/components/admin/ResendButton";
 
 export default async function SubmissionDetailPage({ params }: { params: { id: string } }) {
   const supabase = createServerSupabase();
@@ -41,6 +42,8 @@ export default async function SubmissionDetailPage({ params }: { params: { id: s
           </a>
         )}
       </div>
+
+      <ResendButton submissionRecordId={sub.id} />
 
       <Section title="Job">
         <Grid>
