@@ -2,11 +2,12 @@ import { createClient } from "@/lib/supabase/client";
 import type { WizardState } from "@/lib/types";
 
 // Runs from the browser with no login required — anyone with the link can
-// submit (by design, per the "just names, no sign-in" requirement). Only the
-// admin area can read submissions back. Hands off to a server route (using
-// the service role) for PDF generation + email once the record is saved.
+// submit (by design). Only the admin area can read submissions back. Hands
+// off to a server route (using the service role) for PDF generation + email
+// once the record is saved.
 export async function submitSiteJoint(data: WizardState) {
   const supabase = createClient();
+  const submittedByName = data.laminator_names.join(", ");
 
   // Idempotency guard: if this draftId was already submitted (e.g. a retry
   // after a network drop), return the existing record instead of duplicating.
@@ -53,10 +54,10 @@ export async function submitSiteJoint(data: WizardState) {
       flocoat: data.flocoat,
       flocoat_colour: data.flocoat_colour || null,
       wax_coat_details: data.wax_coat_details || null,
-      laminator_id: data.laminator_id || null,
-      supervisor_id: data.supervisor_id || null,
-      submitted_by_personnel_id: data.submitted_by_personnel_id,
-      submitted_by_name: data.submitted_by_name,
+      laminator_ids: data.laminator_ids,
+      laminator_names: data.laminator_names,
+      submitted_by_name: submittedByName,
+      work_date: data.work_date || null,
     })
     .select("id")
     .single();
@@ -82,20 +83,44 @@ export async function submitSiteJoint(data: WizardState) {
     glass_weight_kg: Number(data.glass_weight_kg),
     catalyst_percentage: parseFloat(data.catalyst_percentage),
     resin_batch_no: data.resin_batch_no,
-    glass_batch_no: data.glass_batch_no || null,
+    glass_batch_no: data.glass_batch_no,
   });
 
-  const stepsToSave = data.layup_steps.filter((s) => s.detail && s.detail.trim() && s.detail !== "N/A");
+  // Layup: joint prep, tack, dynamic construction stages, and finish —
+  // only rows with a real detail selected are saved. No per-step time is
+  // collected; the single work_date on the submission covers that.
+  const stepsToSave: {
+    step_no: number; step_label: string; detail: string | null; width_mm: number | null; position: string | null;
+  }[] = [];
+  let stepNo = 1;
+
+  if (data.joint_prep_detail.trim()) {
+    stepsToSave.push({ step_no: stepNo++, step_label: "Check Joint Preparation", detail: data.joint_prep_detail, width_mm: null, position: null });
+  }
+  if (data.tack_detail.trim()) {
+    stepsToSave.push({
+      step_no: stepNo++, step_label: "Construction Details - Tack", detail: data.tack_detail,
+      width_mm: data.tack_width_mm ? Number(data.tack_width_mm) : null, position: null,
+    });
+  }
+  data.construction_stages.forEach((s, idx) => {
+    if (s.detail && s.detail.trim()) {
+      stepsToSave.push({
+        step_no: stepNo++, step_label: `Construction Details - Stage ${idx + 1}`, detail: s.detail,
+        width_mm: s.width_mm ? Number(s.width_mm) : null, position: s.position || null,
+      });
+    }
+  });
+  if (data.finish_detail.trim()) {
+    stepsToSave.push({
+      step_no: stepNo++, step_label: "Finish - External", detail: data.finish_detail,
+      width_mm: data.finish_width_mm ? Number(data.finish_width_mm) : null, position: null,
+    });
+  }
+
   if (stepsToSave.length) {
     await supabase.from("site_joint_layup_steps").insert(
-      stepsToSave.map((s) => ({
-        submission_id: submissionRecordId,
-        step_no: s.step_no,
-        step_label: s.step_label,
-        detail: s.detail,
-        width_mm: s.width_mm,
-        completed_at: s.completed_at || new Date().toISOString(),
-      }))
+      stepsToSave.map((s) => ({ submission_id: submissionRecordId, ...s }))
     );
   }
 
@@ -121,7 +146,7 @@ export async function submitSiteJoint(data: WizardState) {
       job_number: data.job_number,
       photo_type: photo.photo_type,
       storage_path: path,
-      uploaded_by_name: data.submitted_by_name,
+      uploaded_by_name: submittedByName,
     });
   }
 

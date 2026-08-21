@@ -3,16 +3,15 @@
 import { useWizardStore } from "@/store/wizard-store";
 import { usePersonnel } from "@/lib/use-personnel";
 import { TextField } from "@/components/ui/TextField";
-import { SelectField } from "@/components/ui/SelectField";
 import { WizardNav } from "@/components/wizard/WizardNav";
 
 export default function JobStep() {
-  const { data, set } = useWizardStore();
+  const { data, set, toggleLaminator } = useWizardStore();
   const { laminators, loading } = usePersonnel();
 
   function validate() {
-    if (!data.laminator_id) {
-      alert("Select your name.");
+    if (data.laminator_ids.length === 0) {
+      alert("Select at least one Laminator.");
       return false;
     }
     if (!/^\d{4,5}$/.test(data.job_number.trim())) {
@@ -30,18 +29,33 @@ export default function JobStep() {
     <div className="space-y-5">
       <h1 className="text-xl font-bold text-paper">Job</h1>
 
-      <SelectField
-        label="Your Name" required
-        value={data.laminator_id}
-        onChange={(v) => {
-          const person = laminators.find((p) => p.id === v);
-          set("laminator_id", v);
-          set("submitted_by_personnel_id", v);
-          set("submitted_by_name", person?.full_name ?? "");
-        }}
-        options={laminators.map((p) => ({ value: p.id, label: p.full_name }))}
-        placeholder={loading ? "Loading..." : "Who's submitting this?"}
-      />
+      <div>
+        <span className="block text-sm font-medium text-paper/80 mb-2">
+          Laminator <span className="text-accent">*</span>
+          <span className="text-paper/40 font-normal"> — tap all that apply</span>
+        </span>
+        {loading ? (
+          <p className="text-paper/40 text-sm">Loading...</p>
+        ) : (
+          <div className="grid grid-cols-2 gap-2">
+            {laminators.map((p) => {
+              const selected = data.laminator_ids.includes(p.id);
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => toggleLaminator(p.id, p.full_name)}
+                  className={`min-h-touch rounded-xl px-3 py-3 text-base font-semibold border-2 active:scale-[0.98] ${
+                    selected ? "bg-accent border-accent text-ink" : "bg-panel border-line text-paper"
+                  }`}
+                >
+                  {p.full_name}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       <TextField
         label="Job Number" required
@@ -52,7 +66,7 @@ export default function JobStep() {
 
       <TextField label="Job Details" required value={data.job_details} onChange={(v) => set("job_details", v)} placeholder="Describe the job" />
 
-      <WizardNav nextHref="/new/materials" onBeforeNext={validate} />
+      <WizardNav nextHref="/new/site" onBeforeNext={validate} />
     </div>
   );
 }

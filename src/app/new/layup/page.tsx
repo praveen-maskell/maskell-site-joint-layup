@@ -7,18 +7,56 @@ import { TextField } from "@/components/ui/TextField";
 import { SelectField } from "@/components/ui/SelectField";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { WizardNav } from "@/components/wizard/WizardNav";
-import { LAYUP_DETAIL_OPTIONS, FLOCOAT_COLOURS, MANDATORY_LAYUP_STEP_LABEL } from "@/lib/constants";
+import {
+  JOINT_PREP_OPTIONS, TACK_DETAIL_OPTIONS, CONSTRUCTION_LAYUP_OPTIONS, FINISH_DETAIL_OPTIONS,
+  CONSTRUCTION_POSITIONS, MAX_CONSTRUCTION_STAGES, FLOCOAT_COLOURS,
+} from "@/lib/constants";
 
 const OTHER = "Other";
 
+// Small reusable "pick from predefined options, or type your own" control —
+// mirrors the pattern used across the layup section.
+function DetailPicker({
+  label, value, predefined, onChange,
+}: {
+  label: string;
+  value: string;
+  predefined: string[];
+  onChange: (v: string) => void;
+}) {
+  const [otherText, setOtherText] = useState("");
+  const isOther = !!value && !predefined.includes(value);
+
+  return (
+    <div className="space-y-2">
+      <span className="block text-sm font-medium text-paper/80">{label}</span>
+      <SegmentedControl
+        options={[...predefined, OTHER]}
+        value={isOther ? OTHER : value}
+        onChange={(v) => onChange(v === OTHER ? otherText : v)}
+      />
+      {isOther && (
+        <TextField
+          label="Detail (free text)"
+          value={otherText || value}
+          onChange={(v) => {
+            setOtherText(v);
+            onChange(v);
+          }}
+          placeholder="Describe layup detail"
+        />
+      )}
+    </div>
+  );
+}
+
 export default function LayupStep() {
-  const { data, updateLayupStep, addExtraLayupStep, set } = useWizardStore();
-  const [otherText, setOtherText] = useState<Record<number, string>>({});
+  const { data, set, updateConstructionStage, addConstructionStage } = useWizardStore();
 
   function validate() {
-    const mandatory = data.layup_steps.find((s) => s.step_label === MANDATORY_LAYUP_STEP_LABEL);
-    if (!mandatory?.detail?.trim()) {
-      alert(`"${MANDATORY_LAYUP_STEP_LABEL}" is required.`);
+    const stage1 = data.construction_stages[0];
+    if (!stage1?.position || !stage1?.detail?.trim()) {
+      alert("Construction Details — Stage 1 needs a Position and Layup selected.");
       return false;
     }
     if (data.flocoat && !data.flocoat_colour) {
@@ -32,57 +70,62 @@ export default function LayupStep() {
     <div className="space-y-6">
       <h1 className="text-xl font-bold text-paper">Layup</h1>
 
-      {data.layup_steps.map((step) => {
-        const predefined = LAYUP_DETAIL_OPTIONS[step.step_label] ?? [];
-        const isMandatory = step.step_label === MANDATORY_LAYUP_STEP_LABEL;
-        const isJointPrep = step.step_no === 1;
-        const isOther = step.detail === OTHER || (!!step.detail && !predefined.includes(step.detail) && step.detail !== "N/A");
-        return (
-          <div key={step.step_no} className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="font-semibold text-paper">
-                {step.step_no}. {step.step_label} {isMandatory && <span className="text-accent">*</span>}
-              </span>
-              {step.completed_at && <span className="text-good text-xs">✓ {new Date(step.completed_at).toLocaleTimeString()}</span>}
-            </div>
+      <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
+        <span className="font-semibold text-paper">Check Joint Preparation</span>
+        <DetailPicker label="Detail" value={data.joint_prep_detail} predefined={JOINT_PREP_OPTIONS} onChange={(v) => set("joint_prep_detail", v)} />
+      </div>
 
-            {predefined.length > 0 ? (
-              <div>
-                <span className="block text-sm font-medium text-paper/80 mb-2">Detail / Layup</span>
-                <SegmentedControl
-                  options={[...predefined, OTHER]}
-                  value={isOther ? OTHER : step.detail ?? ""}
-                  onChange={(v) => updateLayupStep(step.step_no, { detail: v === OTHER ? (otherText[step.step_no] || "") : v })}
-                />
-              </div>
-            ) : null}
+      <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
+        <span className="font-semibold text-paper">Construction Details - Tack</span>
+        <DetailPicker label="Layup" value={data.tack_detail} predefined={TACK_DETAIL_OPTIONS} onChange={(v) => set("tack_detail", v)} />
+        <NumericField label="Width" unit="mm" value={data.tack_width_mm} onChange={(v) => set("tack_width_mm", v)} />
+      </div>
 
-            {(isOther || predefined.length === 0) && (
-              <TextField
-                label="Detail (free text)"
-                value={otherText[step.step_no] ?? step.detail ?? ""}
-                onChange={(v) => {
-                  setOtherText((s) => ({ ...s, [step.step_no]: v }));
-                  updateLayupStep(step.step_no, { detail: v });
-                }}
-                placeholder="Describe layup detail"
+      <div className="space-y-3">
+        <span className="font-semibold text-paper">Construction Details</span>
+        {data.construction_stages.map((stage, idx) => (
+          <div key={stage.stage_no} className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
+            <span className="font-semibold text-paper/80">
+              Stage {stage.stage_no} {idx === 0 && <span className="text-accent">*</span>}
+            </span>
+            <div>
+              <span className="block text-sm font-medium text-paper/80 mb-2">Position</span>
+              <SegmentedControl
+                options={CONSTRUCTION_POSITIONS}
+                value={stage.position}
+                onChange={(v) => updateConstructionStage(stage.stage_no, { position: v })}
               />
-            )}
-
-            {!isJointPrep && (
-              <NumericField label="Width" unit="mm" value={step.width_mm?.toString() ?? ""} onChange={(v) => updateLayupStep(step.step_no, { width_mm: v ? Number(v) : null })} />
-            )}
+            </div>
+            <DetailPicker
+              label="Layup"
+              value={stage.detail ?? ""}
+              predefined={CONSTRUCTION_LAYUP_OPTIONS}
+              onChange={(v) => updateConstructionStage(stage.stage_no, { detail: v })}
+            />
+            <NumericField
+              label="Width" unit="mm"
+              value={stage.width_mm}
+              onChange={(v) => updateConstructionStage(stage.stage_no, { width_mm: v })}
+            />
           </div>
-        );
-      })}
+        ))}
 
-      <button
-        type="button"
-        onClick={addExtraLayupStep}
-        className="w-full min-h-touch rounded-xl border-2 border-dashed border-line text-paper/60 font-semibold"
-      >
-        + Add Step
-      </button>
+        {data.construction_stages.length < MAX_CONSTRUCTION_STAGES && (
+          <button
+            type="button"
+            onClick={addConstructionStage}
+            className="w-full min-h-touch rounded-xl border-2 border-dashed border-line text-paper/60 font-semibold"
+          >
+            + Add Stage ({data.construction_stages.length} / {MAX_CONSTRUCTION_STAGES})
+          </button>
+        )}
+      </div>
+
+      <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
+        <span className="font-semibold text-paper">Finish - External</span>
+        <DetailPicker label="Detail" value={data.finish_detail} predefined={FINISH_DETAIL_OPTIONS} onChange={(v) => set("finish_detail", v)} />
+        <NumericField label="Width" unit="mm" value={data.finish_width_mm} onChange={(v) => set("finish_width_mm", v)} />
+      </div>
 
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
         <span className="font-semibold text-paper">FloCoat</span>
@@ -98,7 +141,7 @@ export default function LayupStep() {
         )}
       </div>
 
-      <WizardNav backHref="/new/site" nextHref="/new/inspection" onBeforeNext={validate} />
+      <WizardNav backHref="/new/materials" nextHref="/new/inspection" onBeforeNext={validate} />
     </div>
   );
 }

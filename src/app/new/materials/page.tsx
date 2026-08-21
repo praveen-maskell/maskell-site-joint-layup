@@ -24,6 +24,10 @@ export default function MaterialsStep() {
       alert("Resin Batch No. is required.");
       return false;
     }
+    if (!data.glass_batch_no.trim()) {
+      alert("Glass Batch No. is required.");
+      return false;
+    }
     return true;
   }
 
@@ -41,14 +45,14 @@ export default function MaterialsStep() {
       <TextField label="Resin Batch No." required value={data.resin_batch_no} onChange={(v) => set("resin_batch_no", v)} />
 
       <NumericField label="Glass Weight" required unit="kg" value={data.glass_weight_kg} onChange={(v) => set("glass_weight_kg", v)} placeholder="8.2" />
-      <TextField label="Glass Batch No." value={data.glass_batch_no} onChange={(v) => set("glass_batch_no", v)} />
+      <TextField label="Glass Batch No." required value={data.glass_batch_no} onChange={(v) => set("glass_batch_no", v)} />
 
       <div>
         <span className="block text-sm font-medium text-paper/80 mb-2">Catalyst <span className="text-accent">*</span></span>
         <SegmentedControl options={CATALYST_PERCENTAGE_OPTIONS} value={data.catalyst_percentage} columns={3} onChange={(v) => set("catalyst_percentage", v)} />
       </div>
 
-      <WizardNav backHref="/new" nextHref="/new/site" onBeforeNext={validate} />
+      <WizardNav backHref="/new/site" nextHref="/new/layup" onBeforeNext={validate} />
     </div>
   );
 }

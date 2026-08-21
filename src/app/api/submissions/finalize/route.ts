@@ -17,9 +17,7 @@ export async function POST(req: NextRequest) {
     .from("site_joint_submissions")
     .select(
       `*, materials:site_joint_materials(*), layup_steps:site_joint_layup_steps(*),
-       inspections:site_joint_inspections(*), photos:site_joint_photos(*),
-       laminator:authorised_personnel!site_joint_submissions_laminator_id_fkey(full_name),
-       supervisor:authorised_personnel!site_joint_submissions_supervisor_id_fkey(full_name)`
+       inspections:site_joint_inspections(*), photos:site_joint_photos(*)`
     )
     .eq("id", submissionRecordId)
     .single();
@@ -47,9 +45,8 @@ export async function POST(req: NextRequest) {
     flocoat_colour: sub.flocoat_colour,
     wax_coat_details: sub.wax_coat_details,
     submitted_at: sub.submitted_at,
-    laminator_name: sub.laminator?.full_name ?? "—",
-    supervisor_name: sub.supervisor?.full_name ?? "—",
-    submitted_by_name: sub.submitted_by_name ?? "—",
+    work_date: sub.work_date,
+    laminator_names: sub.laminator_names ?? [],
     materials: sub.materials ?? { resin_weight_kg: 0, glass_weight_kg: 0, catalyst_percentage: null, resin_batch_no: null, glass_batch_no: null },
     layup_steps: (sub.layup_steps ?? []).sort((a: any, b: any) => a.step_no - b.step_no),
     inspections: sub.inspections ?? [],

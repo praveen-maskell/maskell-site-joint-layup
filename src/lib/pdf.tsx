@@ -45,14 +45,13 @@ export interface SubmissionPdfData {
   flocoat_colour: string | null;
   wax_coat_details: string | null;
   submitted_at: string;
-  laminator_name: string;
-  supervisor_name: string;
-  submitted_by_name: string;
+  work_date: string | null;
+  laminator_names: string[];
   materials: {
     resin_weight_kg: number; glass_weight_kg: number; catalyst_percentage: number | null;
     resin_batch_no: string | null; glass_batch_no: string | null;
   };
-  layup_steps: { step_no: number; step_label: string; detail: string | null; width_mm: number | null; completed_at: string }[];
+  layup_steps: { step_no: number; step_label: string; detail: string | null; width_mm: number | null; position?: string | null }[];
   inspections: { item: string; result: string; details: string | null }[];
   photos: { photo_type: string; signedUrl: string }[];
 }
@@ -78,6 +77,8 @@ export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
             <Field label="Job Number" value={d.job_number} />
             <Field label="Resin Type" value={d.resin_type} />
             <Field label="Job Details" value={d.job_details} />
+            <Field label="Work Date" value={d.work_date} />
+            <Field label="Laminator(s)" value={d.laminator_names.join(", ")} />
           </View>
         </View>
 
@@ -107,15 +108,15 @@ export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
             <View style={styles.tr}>
               <Text style={styles.th}>Step</Text>
               <Text style={[styles.th, { flex: 2 }]}>Detail / Layup</Text>
+              <Text style={styles.th}>Position</Text>
               <Text style={styles.th}>Width (mm)</Text>
-              <Text style={styles.th}>Time</Text>
             </View>
             {d.layup_steps.map((s) => (
               <View style={styles.tr} key={s.step_no}>
                 <Text style={styles.td}>{s.step_no}. {s.step_label}</Text>
                 <Text style={[styles.td, { flex: 2 }]}>{s.detail ?? "—"}</Text>
+                <Text style={styles.td}>{s.position ?? "—"}</Text>
                 <Text style={styles.td}>{s.width_mm ?? "—"}</Text>
-                <Text style={styles.td}>{new Date(s.completed_at).toLocaleTimeString("en-NZ")}</Text>
               </View>
             ))}
           </View>
@@ -145,15 +146,6 @@ export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
                 <Text style={[styles.td, { flex: 2 }]}>{i.details ?? "—"}</Text>
               </View>
             ))}
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>PERSONNEL</Text>
-          <View style={styles.row}>
-            <Field label="Laminator" value={d.laminator_name} />
-            <Field label="Supervisor" value={d.supervisor_name} />
-            <Field label="Submitted By" value={d.submitted_by_name} />
           </View>
         </View>
 

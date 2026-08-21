@@ -8,9 +8,7 @@ export default async function SubmissionDetailPage({ params }: { params: { id: s
     .from("site_joint_submissions")
     .select(
       `*, materials:site_joint_materials(*), layup_steps:site_joint_layup_steps(*),
-       inspections:site_joint_inspections(*), photos:site_joint_photos(*),
-       laminator:authorised_personnel!site_joint_submissions_laminator_id_fkey(full_name),
-       supervisor:authorised_personnel!site_joint_submissions_supervisor_id_fkey(full_name)`
+       inspections:site_joint_inspections(*), photos:site_joint_photos(*)`
     )
     .eq("id", params.id)
     .single();
@@ -48,6 +46,7 @@ export default async function SubmissionDetailPage({ params }: { params: { id: s
         <Grid>
           <Item label="Resin Type" value={sub.resin_type} />
           <Item label="Job Details" value={sub.laminate_details} />
+          <Item label="Work Date" value={sub.work_date} />
         </Grid>
       </Section>
 
@@ -74,7 +73,7 @@ export default async function SubmissionDetailPage({ params }: { params: { id: s
           {(sub.layup_steps ?? []).sort((a: any, b: any) => a.step_no - b.step_no).map((s: any) => (
             <div key={s.step_no} className="flex justify-between text-sm border-b border-line py-1">
               <span className="text-paper/70">{s.step_no}. {s.step_label} — {s.detail ?? "—"}</span>
-              <span className="text-paper">{s.width_mm ? `${s.width_mm}mm · ` : ""}{new Date(s.completed_at).toLocaleTimeString("en-NZ")}</span>
+              <span className="text-paper">{s.position ? `${s.position} · ` : ""}{s.width_mm ? `${s.width_mm}mm` : ""}</span>
             </div>
           ))}
         </div>
@@ -103,9 +102,7 @@ export default async function SubmissionDetailPage({ params }: { params: { id: s
 
       <Section title="Personnel">
         <Grid>
-          <Item label="Laminator" value={sub.laminator?.full_name} />
-          <Item label="Supervisor" value={sub.supervisor?.full_name} />
-          <Item label="Submitted By" value={sub.submitted_by_name} />
+          <Item label="Laminator(s)" value={(sub.laminator_names ?? []).join(", ")} />
           <Item label="Submitted At" value={new Date(sub.submitted_at).toLocaleString("en-NZ")} />
         </Grid>
       </Section>

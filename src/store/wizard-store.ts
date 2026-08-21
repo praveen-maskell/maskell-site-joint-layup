@@ -1,39 +1,41 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { v4 as uuid } from "uuid";
-import type { WizardState, LayupStep, InspectionResult, CapturedPhoto } from "@/lib/types";
-import { LAYUP_STEP_TEMPLATES, INSPECTION_ITEMS } from "@/lib/constants";
+import type { WizardState, ConstructionStage, InspectionResult, CapturedPhoto } from "@/lib/types";
+import { INSPECTION_ITEMS, MAX_CONSTRUCTION_STAGES } from "@/lib/constants";
+
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
 
 function emptyState(): WizardState {
   return {
     draftId: uuid(),
+    laminator_ids: [],
+    laminator_names: [],
     job_number: "",
-    resin_type: "",
     job_details: "",
+    temperature_c: "",
+    weather: [],
+    position_of_work: "",
+    resin_type: "",
     resin_weight_kg: "",
     glass_weight_kg: "",
     catalyst_percentage: "",
     resin_batch_no: "",
     glass_batch_no: "",
-    temperature_c: "",
-    weather: [],
-    position_of_work: "",
-    layup_steps: LAYUP_STEP_TEMPLATES.map((t) => ({
-      step_no: t.step_no,
-      step_label: t.label,
-      detail: t.defaultDetail ?? null,
-      width_mm: null,
-      completed_at: "",
-    })),
+    joint_prep_detail: "",
+    tack_detail: "",
+    tack_width_mm: "",
+    construction_stages: [{ stage_no: 1, position: "", detail: null, width_mm: "" }],
+    finish_detail: "",
+    finish_width_mm: "",
     flocoat: false,
     flocoat_colour: "",
     wax_coat_details: "",
     inspections: INSPECTION_ITEMS.map((item) => ({ item, result: null, details: null })),
     photos: [],
-    laminator_id: "",
-    supervisor_id: "",
-    submitted_by_personnel_id: "",
-    submitted_by_name: "",
+    work_date: todayISO(),
   };
 }
 
@@ -42,8 +44,9 @@ interface WizardStore {
   submitting: boolean;
   submitError: string | null;
   set: <K extends keyof WizardState>(key: K, value: WizardState[K]) => void;
-  updateLayupStep: (step_no: number, patch: Partial<LayupStep>) => void;
-  addExtraLayupStep: () => void;
+  toggleLaminator: (id: string, name: string) => void;
+  updateConstructionStage: (stage_no: number, patch: Partial<ConstructionStage>) => void;
+  addConstructionStage: () => void;
   updateInspection: (item: InspectionResult["item"], patch: Partial<InspectionResult>) => void;
   addPhoto: (photo: CapturedPhoto) => void;
   removePhoto: (index: number) => void;
@@ -65,26 +68,36 @@ export const useWizardStore = create<WizardStore>()(
       submitting: false,
       submitError: null,
       set: (key, value) => set((s) => ({ data: { ...s.data, [key]: value } })),
-      updateLayupStep: (step_no, patch) =>
-        set((s) => ({
-          data: {
-            ...s.data,
-            layup_steps: s.data.layup_steps.map((st) =>
-              st.step_no === step_no
-                ? { ...st, ...patch, completed_at: patch.detail ? new Date().toISOString() : st.completed_at }
-                : st
-            ),
-          },
-        })),
-      addExtraLayupStep: () =>
+      toggleLaminator: (id, name) =>
         set((s) => {
-          const nextNo = Math.max(...s.data.layup_steps.map((s) => s.step_no), 0) + 1;
+          const included = s.data.laminator_ids.includes(id);
           return {
             data: {
               ...s.data,
-              layup_steps: [
-                ...s.data.layup_steps,
-                { step_no: nextNo, step_label: `Additional Step ${nextNo}`, detail: null, width_mm: null, completed_at: "" },
+              laminator_ids: included ? s.data.laminator_ids.filter((x) => x !== id) : [...s.data.laminator_ids, id],
+              laminator_names: included ? s.data.laminator_names.filter((n) => n !== name) : [...s.data.laminator_names, name],
+            },
+          };
+        }),
+      updateConstructionStage: (stage_no, patch) =>
+        set((s) => ({
+          data: {
+            ...s.data,
+            construction_stages: s.data.construction_stages.map((st) =>
+              st.stage_no === stage_no ? { ...st, ...patch } : st
+            ),
+          },
+        })),
+      addConstructionStage: () =>
+        set((s) => {
+          if (s.data.construction_stages.length >= MAX_CONSTRUCTION_STAGES) return s;
+          const nextNo = s.data.construction_stages.length + 1;
+          return {
+            data: {
+              ...s.data,
+              construction_stages: [
+                ...s.data.construction_stages,
+                { stage_no: nextNo, position: "", detail: null, width_mm: "" },
               ],
             },
           };

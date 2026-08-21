@@ -33,9 +33,9 @@ export default function SiteStep() {
         <SegmentedControl options={POSITION_OF_WORK_OPTIONS} value={data.position_of_work} onChange={(v) => set("position_of_work", v)} />
       </div>
 
-      <p className="text-paper/40 text-xs">Date and time are recorded automatically on submission.</p>
+      <p className="text-paper/40 text-xs">Work date is confirmed at the end of the form.</p>
 
-      <WizardNav backHref="/new/materials" nextHref="/new/layup" onBeforeNext={validate} />
+      <WizardNav backHref="/new" nextHref="/new/materials" onBeforeNext={validate} />
     </div>
   );
 }

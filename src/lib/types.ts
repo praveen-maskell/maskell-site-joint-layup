@@ -14,18 +14,29 @@ export type PhotoType = "Joint Before Work" | "Completed Joint / Layup";
 
 export type ResinType = "580T" | "580N" | "901" | "907";
 
+export type ConstructionPosition = "Internal" | "External" | "Both";
+
 export interface Personnel {
   id: string;
   full_name: string;
   role: "laminator" | "supervisor" | "worker";
 }
 
-export interface LayupStep {
+// One dynamic construction stage — starts with 1, up to 5 total.
+export interface ConstructionStage {
+  stage_no: number;
+  position: ConstructionPosition | "";
+  detail: string | null;
+  width_mm: string;
+}
+
+// A saved layup step record as read back from the database (PDF/admin views).
+export interface LayupStepRecord {
   step_no: number;
   step_label: string;
   detail: string | null;
   width_mm: number | null;
-  completed_at: string;
+  position?: string | null;
 }
 
 export interface InspectionResult {
@@ -44,24 +55,31 @@ export interface WizardState {
   draftId: string; // idempotency key, generated client-side once per new submission
 
   // JOB
+  laminator_ids: string[];
+  laminator_names: string[];
   job_number: string;
-  resin_type: ResinType | "";
   job_details: string;
-
-  // MATERIALS
-  resin_weight_kg: string;
-  glass_weight_kg: string;
-  catalyst_percentage: string;
-  resin_batch_no: string;
-  glass_batch_no: string;
 
   // SITE
   temperature_c: string;
   weather: WeatherOption[];
   position_of_work: PositionOfWork | "";
 
+  // MATERIALS
+  resin_type: ResinType | "";
+  resin_weight_kg: string;
+  glass_weight_kg: string;
+  catalyst_percentage: string;
+  resin_batch_no: string;
+  glass_batch_no: string;
+
   // LAYUP
-  layup_steps: LayupStep[];
+  joint_prep_detail: string;
+  tack_detail: string;
+  tack_width_mm: string;
+  construction_stages: ConstructionStage[];
+  finish_detail: string;
+  finish_width_mm: string;
 
   // FLOCOAT
   flocoat: boolean;
@@ -74,9 +92,6 @@ export interface WizardState {
   // PHOTOS
   photos: CapturedPhoto[];
 
-  // PERSONNEL
-  laminator_id: string;
-  supervisor_id: string;
-  submitted_by_personnel_id: string;
-  submitted_by_name: string;
+  // REVIEW
+  work_date: string; // YYYY-MM-DD, defaults to today, editable at the end
 }
