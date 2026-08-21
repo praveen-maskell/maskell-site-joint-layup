@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
     position_of_work: sub.position_of_work,
     flocoat: sub.flocoat,
     flocoat_colour: sub.flocoat_colour,
+    flocoat_weight_kg: sub.flocoat_weight_kg,
     wax_coat_details: sub.wax_coat_details,
     submitted_at: sub.submitted_at,
     work_date: sub.work_date,

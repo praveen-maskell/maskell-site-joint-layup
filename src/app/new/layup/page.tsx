@@ -63,6 +63,10 @@ export default function LayupStep() {
       alert("Select a FloCoat colour.");
       return false;
     }
+    if (data.flocoat && !data.flocoat_weight_kg) {
+      alert("Enter the FloCoat weight (kg).");
+      return false;
+    }
     return true;
   }
 
@@ -136,6 +140,7 @@ export default function LayupStep() {
         {data.flocoat && (
           <>
             <SelectField label="Colour" required value={data.flocoat_colour} onChange={(v) => set("flocoat_colour", v)} options={FLOCOAT_COLOURS.map((c) => ({ value: c, label: c }))} />
+            <NumericField label="FloCoat Weight" required unit="kg" value={data.flocoat_weight_kg} onChange={(v) => set("flocoat_weight_kg", v)} placeholder="e.g. 1.5" />
             <TextField label="Wax Coat Details" value={data.wax_coat_details} onChange={(v) => set("wax_coat_details", v)} placeholder="If required" />
           </>
         )}

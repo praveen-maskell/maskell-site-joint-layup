@@ -43,6 +43,7 @@ export interface SubmissionPdfData {
   position_of_work: string;
   flocoat: boolean;
   flocoat_colour: string | null;
+  flocoat_weight_kg: number | null;
   wax_coat_details: string | null;
   submitted_at: string;
   work_date: string | null;
@@ -127,6 +128,7 @@ export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
           <View style={styles.row}>
             <Field label="FloCoat Applied" value={d.flocoat ? "Yes" : "No"} />
             {d.flocoat && <Field label="Colour" value={d.flocoat_colour} />}
+            {d.flocoat && <Field label="Weight" value={d.flocoat_weight_kg != null ? `${d.flocoat_weight_kg} kg` : null} />}
             {d.flocoat && <Field label="Wax Coat" value={d.wax_coat_details} />}
           </View>
         </View>

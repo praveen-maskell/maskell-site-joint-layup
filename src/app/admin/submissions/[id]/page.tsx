@@ -83,6 +83,7 @@ export default async function SubmissionDetailPage({ params }: { params: { id: s
         <Grid>
           <Item label="Applied" value={sub.flocoat ? "Yes" : "No"} />
           {sub.flocoat && <Item label="Colour" value={sub.flocoat_colour} />}
+          {sub.flocoat && <Item label="Weight" value={sub.flocoat_weight_kg != null ? `${sub.flocoat_weight_kg} kg` : null} />}
           {sub.flocoat && <Item label="Wax Coat" value={sub.wax_coat_details} />}
         </Grid>
       </Section>

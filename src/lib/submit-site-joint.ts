@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+import { v4 as uuid } from "uuid";
 import type { WizardState } from "@/lib/types";
 
 // Runs from the browser with no login required — anyone with the link can
@@ -39,9 +40,16 @@ export async function submitSiteJoint(data: WizardState) {
   if (idErr) throw idErr;
   const submissionId: string = idRes;
 
-  const { data: submission, error: subErr } = await supabase
+  // Generate the row's primary key ourselves rather than asking Postgres to
+  // hand it back via RETURNING — RETURNING requires the SELECT policy to
+  // also pass, and SELECT on this table is admin-only by design (so no one
+  // can browse other people's submissions). Insert-only avoids that entirely.
+  const submissionRecordId = uuid();
+
+  const { error: subErr } = await supabase
     .from("site_joint_submissions")
     .insert({
+      id: submissionRecordId,
       submission_id: submissionId,
       idempotency_key: data.draftId,
       job_id: job?.id,
@@ -53,14 +61,13 @@ export async function submitSiteJoint(data: WizardState) {
       position_of_work: data.position_of_work,
       flocoat: data.flocoat,
       flocoat_colour: data.flocoat_colour || null,
+      flocoat_weight_kg: data.flocoat_weight_kg ? Number(data.flocoat_weight_kg) : null,
       wax_coat_details: data.wax_coat_details || null,
       laminator_ids: data.laminator_ids,
       laminator_names: data.laminator_names,
       submitted_by_name: submittedByName,
       work_date: data.work_date || null,
-    })
-    .select("id")
-    .single();
+    });
   if (subErr) {
     // Unique violation on idempotency_key means a concurrent/duplicate retry
     // beat us to it — look it up rather than surfacing an error.
@@ -75,7 +82,6 @@ export async function submitSiteJoint(data: WizardState) {
     }
     throw subErr;
   }
-  const submissionRecordId: string = submission.id;
 
   await supabase.from("site_joint_materials").insert({
     submission_id: submissionRecordId,

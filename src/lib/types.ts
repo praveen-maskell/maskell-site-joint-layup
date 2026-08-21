@@ -84,6 +84,7 @@ export interface WizardState {
   // FLOCOAT
   flocoat: boolean;
   flocoat_colour: string;
+  flocoat_weight_kg: string;
   wax_coat_details: string;
 
   // INSPECTION

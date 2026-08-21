@@ -32,6 +32,7 @@ function emptyState(): WizardState {
     finish_width_mm: "",
     flocoat: false,
     flocoat_colour: "",
+    flocoat_weight_kg: "",
     wax_coat_details: "",
     inspections: INSPECTION_ITEMS.map((item) => ({ item, result: null, details: null })),
     photos: [],
