@@ -2,19 +2,16 @@
 
 import { useRouter } from "next/navigation";
 import { useWizardStore } from "@/store/wizard-store";
-import { usePersonnel } from "@/lib/use-personnel";
-import { SelectField } from "@/components/ui/SelectField";
 import { submitSiteJoint } from "@/lib/submit-site-joint";
 
 export default function ReviewStep() {
   const store = useWizardStore();
-  const { data, submitting, submitError, set, setSubmitting, setSubmitError, reset } = store;
-  const { laminators, loading } = usePersonnel();
+  const { data, submitting, submitError, setSubmitting, setSubmitError, reset } = store;
   const router = useRouter();
 
   function validate() {
     if (!data.laminator_id) {
-      alert("Select your name.");
+      alert("Your name is missing — go back to the Job page and select it.");
       return false;
     }
     return true;
@@ -37,22 +34,10 @@ export default function ReviewStep() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold text-paper">Personnel &amp; Review</h1>
-
-      <SelectField
-        label="Laminator (Your Name)" required
-        value={data.laminator_id}
-        onChange={(v) => {
-          const person = laminators.find((p) => p.id === v);
-          set("laminator_id", v);
-          set("submitted_by_personnel_id", v);
-          set("submitted_by_name", person?.full_name ?? "");
-        }}
-        options={laminators.map((p) => ({ value: p.id, label: p.full_name }))}
-        placeholder={loading ? "Loading..." : "Who's submitting this?"}
-      />
+      <h1 className="text-xl font-bold text-paper">Review</h1>
 
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-2 text-sm">
+        <Row label="Submitted By" value={data.submitted_by_name} />
         <Row label="Job Number" value={data.job_number} />
         <Row label="Resin" value={data.resin_type} />
         <Row label="Materials" value={`Resin ${data.resin_weight_kg}kg · Glass ${data.glass_weight_kg}kg · Cat ${data.catalyst_percentage}%`} />
