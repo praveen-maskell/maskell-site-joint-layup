@@ -58,8 +58,8 @@ export async function submitSiteJoint(data: WizardState) {
       flocoat: data.flocoat,
       flocoat_colour: data.flocoat_colour || null,
       wax_coat_details: data.wax_coat_details || null,
-      laminator_id: data.laminator_id,
-      supervisor_id: data.supervisor_id,
+      laminator_id: data.laminator_id || null,
+      supervisor_id: data.supervisor_id || null,
       submitted_by_personnel_id: data.submitted_by_personnel_id,
       submitted_by_name: data.submitted_by_name,
     })

@@ -9,16 +9,12 @@ import { submitSiteJoint } from "@/lib/submit-site-joint";
 export default function ReviewStep() {
   const store = useWizardStore();
   const { data, submitting, submitError, set, setSubmitting, setSubmitError, reset } = store;
-  const { laminators, supervisors, everyone, loading } = usePersonnel();
+  const { laminators, loading } = usePersonnel();
   const router = useRouter();
 
   function validate() {
-    if (!data.submitted_by_personnel_id) {
+    if (!data.laminator_id) {
       alert("Select your name.");
-      return false;
-    }
-    if (!data.laminator_id || !data.supervisor_id) {
-      alert("Select the Laminator and Supervisor.");
       return false;
     }
     return true;
@@ -44,29 +40,16 @@ export default function ReviewStep() {
       <h1 className="text-xl font-bold text-paper">Personnel &amp; Review</h1>
 
       <SelectField
-        label="Your Name" required
-        value={data.submitted_by_personnel_id}
+        label="Laminator (Your Name)" required
+        value={data.laminator_id}
         onChange={(v) => {
-          const person = everyone.find((p) => p.id === v);
+          const person = laminators.find((p) => p.id === v);
+          set("laminator_id", v);
           set("submitted_by_personnel_id", v);
           set("submitted_by_name", person?.full_name ?? "");
         }}
-        options={everyone.map((p) => ({ value: p.id, label: p.full_name }))}
-        placeholder={loading ? "Loading..." : "Who's submitting this?"}
-      />
-      <SelectField
-        label="Laminator" required
-        value={data.laminator_id}
-        onChange={(v) => set("laminator_id", v)}
         options={laminators.map((p) => ({ value: p.id, label: p.full_name }))}
-        placeholder={loading ? "Loading..." : "Select laminator"}
-      />
-      <SelectField
-        label="Supervisor" required
-        value={data.supervisor_id}
-        onChange={(v) => set("supervisor_id", v)}
-        options={supervisors.map((p) => ({ value: p.id, label: p.full_name }))}
-        placeholder={loading ? "Loading..." : "Select supervisor"}
+        placeholder={loading ? "Loading..." : "Who's submitting this?"}
       />
 
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-2 text-sm">
