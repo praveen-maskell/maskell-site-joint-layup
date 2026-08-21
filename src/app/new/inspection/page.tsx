@@ -9,6 +9,11 @@ export default function InspectionStep() {
   const { data, updateInspection } = useWizardStore();
 
   function validate() {
+    const unresolved = data.inspections.find((i) => i.result === null);
+    if (unresolved) {
+      alert(`Tap OK or DEFECT for "${unresolved.item}".`);
+      return false;
+    }
     const missingDetails = data.inspections.find((i) => i.result === "DEFECT" && !i.details?.trim());
     if (missingDetails) {
       alert(`Add details for the defect found: ${missingDetails.item}.`);

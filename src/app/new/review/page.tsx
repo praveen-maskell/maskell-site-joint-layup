@@ -54,12 +54,13 @@ export default function ReviewStep() {
 
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-2 text-sm">
         <Row label="Job Number" value={data.job_number} />
-        <Row label="Materials" value={`Resin ${data.resin_weight_kg}kg · Glass ${data.glass_weight_kg}kg · Cat ${data.catalyst_weight_kg}kg`} />
+        <Row label="Resin" value={data.resin_type} />
+        <Row label="Materials" value={`Resin ${data.resin_weight_kg}kg · Glass ${data.glass_weight_kg}kg · Cat ${data.catalyst_percentage}%`} />
         <Row label="Site" value={`${data.temperature_c || "—"}°C, ${data.weather.join(", ") || "—"}, ${data.position_of_work}`} />
-        <Row label="Layup steps" value={`${data.layup_steps.filter((s) => s.initials).length} completed`} />
+        <Row label="Layup steps" value={`${data.layup_steps.filter((s) => s.detail && s.detail !== "N/A").length} completed`} />
         <Row label="FloCoat" value={data.flocoat ? `Yes — ${data.flocoat_colour}` : "No"} />
         <Row label="Inspection" value={data.inspections.some((i) => i.result === "DEFECT") ? "Defect(s) recorded" : "All OK"} />
-        <Row label="Photos" value={`${data.photos.length} / 3 attached`} />
+        <Row label="Photos" value={`${data.photos.length} / 2 attached`} />
       </div>
 
       {submitError && (

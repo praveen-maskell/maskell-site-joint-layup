@@ -5,7 +5,7 @@ import { PhotoCapture } from "@/components/ui/PhotoCapture";
 import { WizardNav } from "@/components/wizard/WizardNav";
 import type { PhotoType } from "@/lib/types";
 
-const REQUIRED_PHOTOS: PhotoType[] = ["Joint Before Work", "Completed Joint / Layup", "Final Inspection"];
+const REQUIRED_PHOTOS: PhotoType[] = ["Joint Before Work", "Completed Joint / Layup"];
 
 export default function PhotosStep() {
   const { data, addPhoto, removePhoto } = useWizardStore();

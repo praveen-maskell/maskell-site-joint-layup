@@ -37,8 +37,7 @@ export interface SubmissionPdfData {
   submission_id: string;
   job_number: string;
   resin_type: string | null;
-  laminate_details: string | null;
-  batch_no: string | null;
+  job_details: string | null;
   temperature_c: number | null;
   weather: string[];
   position_of_work: string;
@@ -50,10 +49,10 @@ export interface SubmissionPdfData {
   supervisor_name: string;
   submitted_by_name: string;
   materials: {
-    resin_weight_kg: number; glass_weight_kg: number; catalyst_weight_kg: number;
-    resin_batch_no: string | null; glass_batch_no: string | null; catalyst_batch_no: string | null;
+    resin_weight_kg: number; glass_weight_kg: number; catalyst_percentage: number | null;
+    resin_batch_no: string | null; glass_batch_no: string | null;
   };
-  layup_steps: { step_no: number; step_label: string; detail: string | null; width_mm: number | null; initials: string; completed_at: string }[];
+  layup_steps: { step_no: number; step_label: string; detail: string | null; width_mm: number | null; completed_at: string }[];
   inspections: { item: string; result: string; details: string | null }[];
   photos: { photo_type: string; signedUrl: string }[];
 }
@@ -78,8 +77,7 @@ export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
           <View style={styles.row}>
             <Field label="Job Number" value={d.job_number} />
             <Field label="Resin Type" value={d.resin_type} />
-            <Field label="Laminate Details" value={d.laminate_details} />
-            <Field label="Batch No." value={d.batch_no} />
+            <Field label="Job Details" value={d.job_details} />
           </View>
         </View>
 
@@ -88,10 +86,9 @@ export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
           <View style={styles.row}>
             <Field label="Resin Weight" value={`${d.materials.resin_weight_kg} kg`} />
             <Field label="Glass Weight" value={`${d.materials.glass_weight_kg} kg`} />
-            <Field label="Catalyst Weight" value={`${d.materials.catalyst_weight_kg} kg`} />
+            <Field label="Catalyst" value={d.materials.catalyst_percentage != null ? `${d.materials.catalyst_percentage}%` : null} />
             <Field label="Resin Batch" value={d.materials.resin_batch_no} />
             <Field label="Glass Batch" value={d.materials.glass_batch_no} />
-            <Field label="Catalyst Batch" value={d.materials.catalyst_batch_no} />
           </View>
         </View>
 
@@ -111,7 +108,6 @@ export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
               <Text style={styles.th}>Step</Text>
               <Text style={[styles.th, { flex: 2 }]}>Detail / Layup</Text>
               <Text style={styles.th}>Width (mm)</Text>
-              <Text style={styles.th}>Initials</Text>
               <Text style={styles.th}>Time</Text>
             </View>
             {d.layup_steps.map((s) => (
@@ -119,7 +115,6 @@ export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
                 <Text style={styles.td}>{s.step_no}. {s.step_label}</Text>
                 <Text style={[styles.td, { flex: 2 }]}>{s.detail ?? "—"}</Text>
                 <Text style={styles.td}>{s.width_mm ?? "—"}</Text>
-                <Text style={styles.td}>{s.initials}</Text>
                 <Text style={styles.td}>{new Date(s.completed_at).toLocaleTimeString("en-NZ")}</Text>
               </View>
             ))}

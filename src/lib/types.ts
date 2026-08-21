@@ -8,7 +8,11 @@ export type PositionOfWork =
 export type InspectionItem =
   | "Chips" | "Delamination" | "Blisters" | "Exposed Fibres" | "Pinholes" | "Air Pockets";
 
-export type PhotoType = "Joint Before Work" | "Completed Joint / Layup" | "Final Inspection";
+export type InspectionOutcome = "OK" | "DEFECT";
+
+export type PhotoType = "Joint Before Work" | "Completed Joint / Layup";
+
+export type ResinType = "580T" | "580N" | "901" | "907";
 
 export interface Personnel {
   id: string;
@@ -21,13 +25,12 @@ export interface LayupStep {
   step_label: string;
   detail: string | null;
   width_mm: number | null;
-  initials: string;
   completed_at: string;
 }
 
 export interface InspectionResult {
   item: InspectionItem;
-  result: "OK" | "DEFECT";
+  result: InspectionOutcome | null; // null until the worker explicitly taps OK or DEFECT
   details: string | null;
 }
 
@@ -42,17 +45,15 @@ export interface WizardState {
 
   // JOB
   job_number: string;
-  resin_type: string;
-  laminate_details: string;
-  batch_no: string;
+  resin_type: ResinType | "";
+  job_details: string;
 
   // MATERIALS
   resin_weight_kg: string;
   glass_weight_kg: string;
-  catalyst_weight_kg: string;
+  catalyst_percentage: string;
   resin_batch_no: string;
   glass_batch_no: string;
-  catalyst_batch_no: string;
 
   // SITE
   temperature_c: string;

@@ -15,7 +15,6 @@ export function PhotoCapture({
   onCapture: (photo: CapturedPhoto) => void;
   onRemove: () => void;
 }) {
-  const cameraInputRef = useRef<HTMLInputElement>(null);
   const uploadInputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
 
@@ -52,34 +51,16 @@ export function PhotoCapture({
         // eslint-disable-next-line @next/next/no-img-element
         <img src={existing.previewUrl} alt={photoType} className="w-full h-40 object-cover rounded-lg" />
       ) : (
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => cameraInputRef.current?.click()}
-            className="min-h-touch rounded-xl bg-accent text-ink font-bold disabled:opacity-50"
-          >
-            {busy ? "Processing..." : "Camera"}
-          </button>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => uploadInputRef.current?.click()}
-            className="min-h-touch rounded-xl bg-ink border-2 border-line text-paper font-bold disabled:opacity-50"
-          >
-            Upload
-          </button>
-        </div>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => uploadInputRef.current?.click()}
+          className="w-full min-h-touch rounded-xl bg-accent text-ink font-bold disabled:opacity-50"
+        >
+          {busy ? "Processing..." : "Upload Photo"}
+        </button>
       )}
 
-      <input
-        ref={cameraInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        className="hidden"
-        onChange={(e) => handleFile(e.target.files?.[0])}
-      />
       <input
         ref={uploadInputRef}
         type="file"

@@ -20,7 +20,7 @@ export async function sendSiteJointEmail(d: SubmissionPdfData, recipients: strin
         ${row("Resin", d.resin_type ?? "—")}
         ${row("Resin Weight", `${d.materials.resin_weight_kg} kg`)}
         ${row("Glass Weight", `${d.materials.glass_weight_kg} kg`)}
-        ${row("Catalyst Weight", `${d.materials.catalyst_weight_kg} kg`)}
+        ${row("Catalyst", `${d.materials.catalyst_percentage ?? "—"}%`)}
         ${row("Laminator", d.laminator_name)}
         ${row("Supervisor", d.supervisor_name)}
         ${row("Site Conditions", `${d.temperature_c ?? "—"}°C, ${d.weather.join(", ") || "—"}, ${d.position_of_work}`)}

@@ -1,8 +1,10 @@
-import type { WeatherOption, PositionOfWork, InspectionItem } from "./types";
+import type { WeatherOption, PositionOfWork, InspectionItem, ResinType } from "./types";
 
 export const WEATHER_OPTIONS: WeatherOption[] = [
   "Sunny", "Windy", "Overcast", "Raining", "Hail", "Fog", "Snow",
 ];
+
+export const RESIN_TYPES: ResinType[] = ["580T", "580N", "901", "907"];
 
 export const POSITION_OF_WORK_OPTIONS: PositionOfWork[] = [
   "In Trench", "Out of Trench", "Supported Above Ground",
@@ -12,6 +14,9 @@ export const POSITION_OF_WORK_OPTIONS: PositionOfWork[] = [
 export const INSPECTION_ITEMS: InspectionItem[] = [
   "Chips", "Delamination", "Blisters", "Exposed Fibres", "Pinholes", "Air Pockets",
 ];
+
+// The only layup step that must be completed before submitting.
+export const MANDATORY_LAYUP_STEP_LABEL = "Construction Details - External (1)";
 
 // Layup step templates — mirrors Form F.5.65's step sequence.
 // Step 1 always defaults to "Check Joint Preparation"; steps 6-8 are

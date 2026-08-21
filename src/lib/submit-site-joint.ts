@@ -46,8 +46,7 @@ export async function submitSiteJoint(data: WizardState) {
       job_id: job?.id,
       job_number: data.job_number,
       resin_type: data.resin_type || null,
-      laminate_details: data.laminate_details || null,
-      batch_no: data.batch_no || null,
+      laminate_details: data.job_details || null,
       temperature_c: data.temperature_c ? Number(data.temperature_c) : null,
       weather: data.weather,
       position_of_work: data.position_of_work,
@@ -81,13 +80,12 @@ export async function submitSiteJoint(data: WizardState) {
     submission_id: submissionRecordId,
     resin_weight_kg: Number(data.resin_weight_kg),
     glass_weight_kg: Number(data.glass_weight_kg),
-    catalyst_weight_kg: Number(data.catalyst_weight_kg),
-    resin_batch_no: data.resin_batch_no || null,
+    catalyst_percentage: Number(data.catalyst_percentage),
+    resin_batch_no: data.resin_batch_no,
     glass_batch_no: data.glass_batch_no || null,
-    catalyst_batch_no: data.catalyst_batch_no || null,
   });
 
-  const stepsToSave = data.layup_steps.filter((s) => s.initials.trim());
+  const stepsToSave = data.layup_steps.filter((s) => s.detail && s.detail.trim() && s.detail !== "N/A");
   if (stepsToSave.length) {
     await supabase.from("site_joint_layup_steps").insert(
       stepsToSave.map((s) => ({
@@ -96,7 +94,6 @@ export async function submitSiteJoint(data: WizardState) {
         step_label: s.step_label,
         detail: s.detail,
         width_mm: s.width_mm,
-        initials: s.initials,
         completed_at: s.completed_at || new Date().toISOString(),
       }))
     );

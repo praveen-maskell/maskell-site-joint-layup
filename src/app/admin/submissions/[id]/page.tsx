@@ -47,8 +47,7 @@ export default async function SubmissionDetailPage({ params }: { params: { id: s
       <Section title="Job">
         <Grid>
           <Item label="Resin Type" value={sub.resin_type} />
-          <Item label="Laminate Details" value={sub.laminate_details} />
-          <Item label="Batch No." value={sub.batch_no} />
+          <Item label="Job Details" value={sub.laminate_details} />
         </Grid>
       </Section>
 
@@ -56,10 +55,9 @@ export default async function SubmissionDetailPage({ params }: { params: { id: s
         <Grid>
           <Item label="Resin Weight" value={`${sub.materials?.resin_weight_kg} kg`} />
           <Item label="Glass Weight" value={`${sub.materials?.glass_weight_kg} kg`} />
-          <Item label="Catalyst Weight" value={`${sub.materials?.catalyst_weight_kg} kg`} />
+          <Item label="Catalyst" value={sub.materials?.catalyst_percentage != null ? `${sub.materials.catalyst_percentage}%` : "—"} />
           <Item label="Resin Batch" value={sub.materials?.resin_batch_no} />
           <Item label="Glass Batch" value={sub.materials?.glass_batch_no} />
-          <Item label="Catalyst Batch" value={sub.materials?.catalyst_batch_no} />
         </Grid>
       </Section>
 
@@ -76,7 +74,7 @@ export default async function SubmissionDetailPage({ params }: { params: { id: s
           {(sub.layup_steps ?? []).sort((a: any, b: any) => a.step_no - b.step_no).map((s: any) => (
             <div key={s.step_no} className="flex justify-between text-sm border-b border-line py-1">
               <span className="text-paper/70">{s.step_no}. {s.step_label} — {s.detail ?? "—"}</span>
-              <span className="text-paper">{s.width_mm ? `${s.width_mm}mm ` : ""}{s.initials} · {new Date(s.completed_at).toLocaleTimeString("en-NZ")}</span>
+              <span className="text-paper">{s.width_mm ? `${s.width_mm}mm · ` : ""}{new Date(s.completed_at).toLocaleTimeString("en-NZ")}</span>
             </div>
           ))}
         </div>

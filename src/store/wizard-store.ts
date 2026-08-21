@@ -9,14 +9,12 @@ function emptyState(): WizardState {
     draftId: uuid(),
     job_number: "",
     resin_type: "",
-    laminate_details: "",
-    batch_no: "",
+    job_details: "",
     resin_weight_kg: "",
     glass_weight_kg: "",
-    catalyst_weight_kg: "",
+    catalyst_percentage: "",
     resin_batch_no: "",
     glass_batch_no: "",
-    catalyst_batch_no: "",
     temperature_c: "",
     weather: [],
     position_of_work: "",
@@ -25,13 +23,12 @@ function emptyState(): WizardState {
       step_label: t.label,
       detail: t.defaultDetail ?? null,
       width_mm: null,
-      initials: "",
       completed_at: "",
     })),
     flocoat: false,
     flocoat_colour: "",
     wax_coat_details: "",
-    inspections: INSPECTION_ITEMS.map((item) => ({ item, result: "OK", details: null })),
+    inspections: INSPECTION_ITEMS.map((item) => ({ item, result: null, details: null })),
     photos: [],
     laminator_id: "",
     supervisor_id: "",
@@ -74,7 +71,7 @@ export const useWizardStore = create<WizardStore>()(
             ...s.data,
             layup_steps: s.data.layup_steps.map((st) =>
               st.step_no === step_no
-                ? { ...st, ...patch, completed_at: patch.initials ? new Date().toISOString() : st.completed_at }
+                ? { ...st, ...patch, completed_at: patch.detail ? new Date().toISOString() : st.completed_at }
                 : st
             ),
           },
@@ -87,7 +84,7 @@ export const useWizardStore = create<WizardStore>()(
               ...s.data,
               layup_steps: [
                 ...s.data.layup_steps,
-                { step_no: nextNo, step_label: `Additional Step ${nextNo}`, detail: null, width_mm: null, initials: "", completed_at: "" },
+                { step_no: nextNo, step_label: `Additional Step ${nextNo}`, detail: null, width_mm: null, completed_at: "" },
               ],
             },
           };

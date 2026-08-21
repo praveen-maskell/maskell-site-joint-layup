@@ -4,7 +4,7 @@ export function OkDefectToggle({
   value,
   onChange,
 }: {
-  value: "OK" | "DEFECT";
+  value: "OK" | "DEFECT" | null;
   onChange: (v: "OK" | "DEFECT") => void;
 }) {
   return (

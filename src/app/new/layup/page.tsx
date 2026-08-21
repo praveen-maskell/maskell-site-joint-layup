@@ -5,19 +5,20 @@ import { useWizardStore } from "@/store/wizard-store";
 import { NumericField } from "@/components/ui/NumericField";
 import { TextField } from "@/components/ui/TextField";
 import { SelectField } from "@/components/ui/SelectField";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { WizardNav } from "@/components/wizard/WizardNav";
-import { LAYUP_DETAIL_OPTIONS, FLOCOAT_COLOURS } from "@/lib/constants";
+import { LAYUP_DETAIL_OPTIONS, FLOCOAT_COLOURS, MANDATORY_LAYUP_STEP_LABEL } from "@/lib/constants";
+
+const OTHER = "Other";
 
 export default function LayupStep() {
   const { data, updateLayupStep, addExtraLayupStep, set } = useWizardStore();
   const [otherText, setOtherText] = useState<Record<number, string>>({});
 
   function validate() {
-    const incomplete = data.layup_steps.find(
-      (s) => s.detail !== "N/A" && s.detail && !s.initials.trim()
-    );
-    if (incomplete) {
-      alert(`Initial the "${incomplete.step_label}" step, or leave it blank if not applicable.`);
+    const mandatory = data.layup_steps.find((s) => s.step_label === MANDATORY_LAYUP_STEP_LABEL);
+    if (!mandatory?.detail?.trim()) {
+      alert(`"${MANDATORY_LAYUP_STEP_LABEL}" is required.`);
       return false;
     }
     if (data.flocoat && !data.flocoat_colour) {
@@ -33,21 +34,27 @@ export default function LayupStep() {
 
       {data.layup_steps.map((step) => {
         const predefined = LAYUP_DETAIL_OPTIONS[step.step_label] ?? [];
-        const isOther = step.detail === "Other" || (step.detail && !predefined.includes(step.detail) && step.detail !== "N/A");
+        const isMandatory = step.step_label === MANDATORY_LAYUP_STEP_LABEL;
+        const isJointPrep = step.step_no === 1;
+        const isOther = step.detail === OTHER || (!!step.detail && !predefined.includes(step.detail) && step.detail !== "N/A");
         return (
           <div key={step.step_no} className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="font-semibold text-paper">{step.step_no}. {step.step_label}</span>
+              <span className="font-semibold text-paper">
+                {step.step_no}. {step.step_label} {isMandatory && <span className="text-accent">*</span>}
+              </span>
               {step.completed_at && <span className="text-good text-xs">✓ {new Date(step.completed_at).toLocaleTimeString()}</span>}
             </div>
 
             {predefined.length > 0 ? (
-              <SelectField
-                label="Detail / Layup"
-                value={isOther ? "Other" : step.detail ?? ""}
-                onChange={(v) => updateLayupStep(step.step_no, { detail: v === "Other" ? (otherText[step.step_no] || "") : v })}
-                options={[...predefined.map((o) => ({ value: o, label: o })), { value: "Other", label: "Other..." }]}
-              />
+              <div>
+                <span className="block text-sm font-medium text-paper/80 mb-2">Detail / Layup</span>
+                <SegmentedControl
+                  options={[...predefined, OTHER]}
+                  value={isOther ? OTHER : step.detail ?? ""}
+                  onChange={(v) => updateLayupStep(step.step_no, { detail: v === OTHER ? (otherText[step.step_no] || "") : v })}
+                />
+              </div>
             ) : null}
 
             {(isOther || predefined.length === 0) && (
@@ -62,10 +69,9 @@ export default function LayupStep() {
               />
             )}
 
-            <div className="grid grid-cols-2 gap-3">
+            {!isJointPrep && (
               <NumericField label="Width" unit="mm" value={step.width_mm?.toString() ?? ""} onChange={(v) => updateLayupStep(step.step_no, { width_mm: v ? Number(v) : null })} />
-              <TextField label="Initials" value={step.initials} onChange={(v) => updateLayupStep(step.step_no, { initials: v.toUpperCase() })} placeholder="e.g. PK" />
-            </div>
+            )}
           </div>
         );
       })}
