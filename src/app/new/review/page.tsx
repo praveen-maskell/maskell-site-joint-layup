@@ -51,7 +51,7 @@ export default function ReviewStep() {
         <Row label="Construction stages" value={`${stagesCompleted} / ${data.construction_stages.length} completed`} />
         <Row label="FloCoat" value={data.flocoat ? `Yes — ${data.flocoat_colour}` : "No"} />
         <Row label="Inspection" value={data.inspections.some((i) => i.result === "DEFECT") ? "Defect(s) recorded" : "All OK"} />
-        <Row label="Photos" value={`${data.photos.length} / 2 attached`} />
+        <Row label="Photos" value={`${data.photos.length} attached (2 required)`} />
       </div>
 
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-2">

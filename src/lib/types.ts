@@ -10,7 +10,7 @@ export type InspectionItem =
 
 export type InspectionOutcome = "OK" | "DEFECT";
 
-export type PhotoType = "Joint Before Work" | "Completed Joint / Layup";
+export type PhotoType = "Joint Before Work" | "Completed Joint / Layup" | "Additional Photo";
 
 export type ResinType = "580T" | "580N" | "901" | "907";
 

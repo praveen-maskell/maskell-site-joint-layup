@@ -13,8 +13,8 @@ export const TEMPERATURE_RANGES = [
 export const CATALYST_PERCENTAGE_OPTIONS = ["1%", "1.25%", "1.5%", "1.75%", "2%", "2.25%", "2.5%"];
 
 export const POSITION_OF_WORK_OPTIONS: PositionOfWork[] = [
-  "In Trench", "Out of Trench", "Supported Above Ground",
-  "Inside", "Outside", "Ground Level and Cradles",
+  "Inside", "Outside", "In Trench", "Out of Trench",
+  "Supported Above Ground", "Ground Level and Cradles",
 ];
 
 export const INSPECTION_ITEMS: InspectionItem[] = [
@@ -30,10 +30,10 @@ export const MAX_CONSTRUCTION_STAGES = 5;
 // (Check Joint Preparation is the one exception — no "Other" there).
 export const JOINT_PREP_OPTIONS = ["Grind & Clean OK"];
 export const TACK_DETAIL_OPTIONS = ["Tack Coat Resin", "Chopped Strand Mat Tack", "Surfacing Veil"];
-export const CONSTRUCTION_LAYUP_OPTIONS = ["1 stage", "2 stage", "3 stage", "4 stage", "5 stage"];
+export const CONSTRUCTION_LAYUP_OPTIONS = ["Stage 1", "Stage 2", "Stage 3", "Stage 4"];
 export const FINISH_DETAIL_OPTIONS = ["Resin Rich Finish", "Surfacing Veil + Topcoat", "Sanded Smooth"];
 
-export const FLOCOAT_COLOURS = ["Grey", "Black", "Blue", "Green", "White", "Custom"];
+export const FLOCOAT_COLOURS = ["White", "Green (Fluorescent)", "Green", "Black"];
 
 export const WIZARD_STEPS = [
   { path: "/new", label: "Job" },
