@@ -38,10 +38,6 @@ export async function POST(req: NextRequest) {
   const pdfData: SubmissionPdfData = {
     submission_id: sub.submission_id,
     job_number: sub.job_number,
-    dwg_no: sub.dwg_no,
-    dn: sub.dn,
-    pn: sub.pn,
-    joint_id: sub.joint_id,
     resin_type: sub.resin_type,
     laminate_details: sub.laminate_details,
     batch_no: sub.batch_no,

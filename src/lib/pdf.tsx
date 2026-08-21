@@ -36,10 +36,6 @@ function Field({ label, value }: { label: string; value: string | number | null 
 export interface SubmissionPdfData {
   submission_id: string;
   job_number: string;
-  dwg_no: string;
-  dn: string | null;
-  pn: string | null;
-  joint_id: string;
   resin_type: string | null;
   laminate_details: string | null;
   batch_no: string | null;
@@ -78,13 +74,9 @@ export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>JOB &amp; JOINT</Text>
+          <Text style={styles.sectionTitle}>JOB</Text>
           <View style={styles.row}>
             <Field label="Job Number" value={d.job_number} />
-            <Field label="DWG No." value={d.dwg_no} />
-            <Field label="Joint ID" value={d.joint_id} />
-            <Field label="Diameter (DN)" value={d.dn} />
-            <Field label="Bar (PN)" value={d.pn} />
             <Field label="Resin Type" value={d.resin_type} />
             <Field label="Laminate Details" value={d.laminate_details} />
             <Field label="Batch No." value={d.batch_no} />

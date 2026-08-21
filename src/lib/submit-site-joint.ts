@@ -27,7 +27,7 @@ export async function submitSiteJoint(data: WizardState) {
   // Ensure job row exists (upsert)
   await supabase
     .from("jobs")
-    .upsert({ job_number: data.job_number, dwg_no: data.dwg_no }, { onConflict: "job_number" });
+    .upsert({ job_number: data.job_number }, { onConflict: "job_number" });
   const { data: job } = await supabase
     .from("jobs")
     .select("id")
@@ -45,10 +45,6 @@ export async function submitSiteJoint(data: WizardState) {
       idempotency_key: data.draftId,
       job_id: job?.id,
       job_number: data.job_number,
-      dwg_no: data.dwg_no,
-      dn: data.dn || null,
-      pn: data.pn || null,
-      joint_id: data.joint_id,
       resin_type: data.resin_type || null,
       laminate_details: data.laminate_details || null,
       batch_no: data.batch_no || null,
@@ -117,7 +113,7 @@ export async function submitSiteJoint(data: WizardState) {
 
   // Photos: upload to storage, then record rows
   for (const photo of data.photos) {
-    const path = `${data.job_number}/${data.joint_id}/${submissionId}/${photo.photo_type.replace(/[^a-z0-9]+/gi, "-")}-${Date.now()}.jpg`;
+    const path = `${data.job_number}/${submissionId}/${photo.photo_type.replace(/[^a-z0-9]+/gi, "-")}-${Date.now()}.jpg`;
     const { error: upErr } = await supabase.storage
       .from("site-joint-photos")
       .upload(path, photo.file, { contentType: photo.file.type, upsert: false });
@@ -126,7 +122,6 @@ export async function submitSiteJoint(data: WizardState) {
     await supabase.from("site_joint_photos").insert({
       submission_id: submissionRecordId,
       job_number: data.job_number,
-      joint_id: data.joint_id,
       photo_type: photo.photo_type,
       storage_path: path,
       uploaded_by_name: data.submitted_by_name,

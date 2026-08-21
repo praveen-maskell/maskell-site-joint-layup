@@ -42,10 +42,6 @@ export interface WizardState {
 
   // JOB
   job_number: string;
-  dwg_no: string;
-  dn: string;
-  pn: string;
-  joint_id: string;
   resin_type: string;
   laminate_details: string;
   batch_no: string;

@@ -34,7 +34,7 @@ export default async function SubmissionDetailPage({ params }: { params: { id: s
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-xl font-bold text-paper">{sub.job_number} · {sub.joint_id}</h1>
+          <h1 className="text-xl font-bold text-paper">{sub.job_number}</h1>
           <p className="text-accent font-mono text-sm">{sub.submission_id}</p>
         </div>
         {pdfUrl && (
@@ -44,11 +44,8 @@ export default async function SubmissionDetailPage({ params }: { params: { id: s
         )}
       </div>
 
-      <Section title="Job & Joint">
+      <Section title="Job">
         <Grid>
-          <Item label="DWG No." value={sub.dwg_no} />
-          <Item label="DN" value={sub.dn} />
-          <Item label="PN" value={sub.pn} />
           <Item label="Resin Type" value={sub.resin_type} />
           <Item label="Laminate Details" value={sub.laminate_details} />
           <Item label="Batch No." value={sub.batch_no} />

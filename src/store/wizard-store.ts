@@ -8,10 +8,6 @@ function emptyState(): WizardState {
   return {
     draftId: uuid(),
     job_number: "",
-    dwg_no: "",
-    dn: "",
-    pn: "",
-    joint_id: "",
     resin_type: "",
     laminate_details: "",
     batch_no: "",

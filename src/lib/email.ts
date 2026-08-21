@@ -17,10 +17,6 @@ export async function sendSiteJointEmail(d: SubmissionPdfData, recipients: strin
       <p style="color:#555;margin-top:0;">${d.submission_id} · ${new Date(d.submitted_at).toLocaleString("en-NZ")}</p>
       <table style="width:100%; border-collapse:collapse; font-size:14px;">
         ${row("Job Number", d.job_number)}
-        ${row("DWG No.", d.dwg_no)}
-        ${row("Joint ID", d.joint_id)}
-        ${row("DN", d.dn ?? "—")}
-        ${row("PN", d.pn ?? "—")}
         ${row("Resin", d.resin_type ?? "—")}
         ${row("Resin Weight", `${d.materials.resin_weight_kg} kg`)}
         ${row("Glass Weight", `${d.materials.glass_weight_kg} kg`)}
@@ -37,7 +33,7 @@ export async function sendSiteJointEmail(d: SubmissionPdfData, recipients: strin
   await resend.emails.send({
     from: process.env.EMAIL_FROM!,
     to: recipients,
-    subject: `SITE JOINT COMPLETED — JOB ${d.job_number} — JOINT ${d.joint_id}`,
+    subject: `SITE JOINT COMPLETED — JOB ${d.job_number} — ${d.submission_id}`,
     html,
     attachments: [
       {

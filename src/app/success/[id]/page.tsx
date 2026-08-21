@@ -5,7 +5,7 @@ export default async function SuccessPage({ params }: { params: { id: string } }
   const supabase = createServiceSupabase();
   const { data: sub } = await supabase
     .from("site_joint_submissions")
-    .select("submission_id, job_number, joint_id")
+    .select("submission_id, job_number")
     .eq("id", params.id)
     .single();
 
@@ -20,7 +20,6 @@ export default async function SuccessPage({ params }: { params: { id: string } }
       {sub && (
         <div className="text-paper/70 space-y-1 mb-8">
           <p>Job: <span className="text-paper font-semibold">{sub.job_number}</span></p>
-          <p>Joint: <span className="text-paper font-semibold">{sub.joint_id}</span></p>
           <p>Submission: <span className="text-accent font-semibold">{sub.submission_id}</span></p>
         </div>
       )}

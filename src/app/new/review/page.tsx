@@ -53,8 +53,7 @@ export default function ReviewStep() {
       />
 
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-2 text-sm">
-        <Row label="Job / Joint" value={`${data.job_number} / ${data.joint_id}`} />
-        <Row label="DWG No." value={data.dwg_no} />
+        <Row label="Job Number" value={data.job_number} />
         <Row label="Materials" value={`Resin ${data.resin_weight_kg}kg · Glass ${data.glass_weight_kg}kg · Cat ${data.catalyst_weight_kg}kg`} />
         <Row label="Site" value={`${data.temperature_c || "—"}°C, ${data.weather.join(", ") || "—"}, ${data.position_of_work}`} />
         <Row label="Layup steps" value={`${data.layup_steps.filter((s) => s.initials).length} completed`} />
