@@ -1,25 +1,27 @@
 import { createClient } from "@/lib/supabase/client";
 import type { WizardState } from "@/lib/types";
 
-// Runs entirely from the browser using the user's own (RLS-scoped) session,
-// then hands off to a server route for PDF generation + email (which needs
-// the service role and the Resend key — never exposed client-side).
+// Runs from the browser with no login required — anyone with the link can
+// submit (by design, per the "just names, no sign-in" requirement). Only the
+// admin area can read submissions back. Hands off to a server route (using
+// the service role) for PDF generation + email once the record is saved.
 export async function submitSiteJoint(data: WizardState) {
   const supabase = createClient();
 
-  const { data: userRes } = await supabase.auth.getUser();
-  const user = userRes.user;
-  if (!user) throw new Error("Not signed in.");
-
   // Idempotency guard: if this draftId was already submitted (e.g. a retry
   // after a network drop), return the existing record instead of duplicating.
-  const { data: existing } = await supabase
-    .from("site_joint_submissions")
-    .select("id, submission_id")
-    .eq("idempotency_key", data.draftId)
-    .maybeSingle();
-  if (existing) {
-    return { submissionRecordId: existing.id, submissionId: existing.submission_id };
+  // Submissions aren't browsable by anon, so this goes through a narrow
+  // server lookup keyed on the exact (unguessable) draft UUID.
+  const existingRes = await fetch("/api/submissions/lookup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ idempotencyKey: data.draftId }),
+  });
+  if (existingRes.ok) {
+    const { submission } = await existingRes.json();
+    if (submission) {
+      return { submissionRecordId: submission.id, submissionId: submission.submission_id };
+    }
   }
 
   // Ensure job row exists (upsert)
@@ -58,11 +60,25 @@ export async function submitSiteJoint(data: WizardState) {
       wax_coat_details: data.wax_coat_details || null,
       laminator_id: data.laminator_id,
       supervisor_id: data.supervisor_id,
-      submitted_by: user.id,
+      submitted_by_personnel_id: data.submitted_by_personnel_id,
+      submitted_by_name: data.submitted_by_name,
     })
     .select("id")
     .single();
-  if (subErr) throw subErr;
+  if (subErr) {
+    // Unique violation on idempotency_key means a concurrent/duplicate retry
+    // beat us to it — look it up rather than surfacing an error.
+    if ((subErr as any).code === "23505") {
+      const retryRes = await fetch("/api/submissions/lookup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idempotencyKey: data.draftId }),
+      });
+      const { submission: retried } = await retryRes.json();
+      if (retried) return { submissionRecordId: retried.id, submissionId: retried.submission_id };
+    }
+    throw subErr;
+  }
   const submissionRecordId: string = submission.id;
 
   await supabase.from("site_joint_materials").insert({
@@ -113,7 +129,7 @@ export async function submitSiteJoint(data: WizardState) {
       joint_id: data.joint_id,
       photo_type: photo.photo_type,
       storage_path: path,
-      uploaded_by: user.id,
+      uploaded_by_name: data.submitted_by_name,
     });
   }
 

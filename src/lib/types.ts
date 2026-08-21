@@ -13,7 +13,7 @@ export type PhotoType = "Joint Before Work" | "Completed Joint / Layup" | "Final
 export interface Personnel {
   id: string;
   full_name: string;
-  role: "laminator" | "supervisor";
+  role: "laminator" | "supervisor" | "worker";
 }
 
 export interface LayupStep {
@@ -80,4 +80,6 @@ export interface WizardState {
   // PERSONNEL
   laminator_id: string;
   supervisor_id: string;
+  submitted_by_personnel_id: string;
+  submitted_by_name: string;
 }

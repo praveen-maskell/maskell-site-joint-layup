@@ -39,6 +39,8 @@ function emptyState(): WizardState {
     photos: [],
     laminator_id: "",
     supervisor_id: "",
+    submitted_by_personnel_id: "",
+    submitted_by_name: "",
   };
 }
 

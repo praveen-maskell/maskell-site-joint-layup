@@ -7,6 +7,7 @@ import type { Personnel } from "@/lib/types";
 export function usePersonnel() {
   const [laminators, setLaminators] = useState<Personnel[]>([]);
   const [supervisors, setSupervisors] = useState<Personnel[]>([]);
+  const [everyone, setEveryone] = useState<Personnel[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,9 +21,10 @@ export function usePersonnel() {
         const rows = (data ?? []) as Personnel[];
         setLaminators(rows.filter((r) => r.role === "laminator"));
         setSupervisors(rows.filter((r) => r.role === "supervisor"));
+        setEveryone(rows);
         setLoading(false);
       });
   }, []);
 
-  return { laminators, supervisors, loading };
+  return { laminators, supervisors, everyone, loading };
 }

@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { createServerSupabase } from "@/lib/supabase/server";
+import { createServiceSupabase } from "@/lib/supabase/server";
 
 export default async function SuccessPage({ params }: { params: { id: string } }) {
-  const supabase = createServerSupabase();
+  const supabase = createServiceSupabase();
   const { data: sub } = await supabase
     .from("site_joint_submissions")
     .select("submission_id, job_number, joint_id")

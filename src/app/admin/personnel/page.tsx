@@ -8,7 +8,7 @@ interface Person { id: string; full_name: string; role: string; active: boolean;
 export default function PersonnelAdminPage() {
   const [people, setPeople] = useState<Person[]>([]);
   const [name, setName] = useState("");
-  const [role, setRole] = useState<"laminator" | "supervisor">("laminator");
+  const [role, setRole] = useState<"laminator" | "supervisor" | "worker">("laminator");
   const [busy, setBusy] = useState(false);
 
   async function load() {
@@ -52,14 +52,15 @@ export default function PersonnelAdminPage() {
           placeholder="Full name"
           className="w-full min-h-touch rounded-lg bg-ink border-2 border-line px-3 text-paper"
         />
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           <button onClick={() => setRole("laminator")} className={`min-h-touch rounded-lg border-2 font-semibold ${role === "laminator" ? "bg-accent border-accent text-ink" : "bg-ink border-line text-paper"}`}>Laminator</button>
           <button onClick={() => setRole("supervisor")} className={`min-h-touch rounded-lg border-2 font-semibold ${role === "supervisor" ? "bg-accent border-accent text-ink" : "bg-ink border-line text-paper"}`}>Supervisor</button>
+          <button onClick={() => setRole("worker")} className={`min-h-touch rounded-lg border-2 font-semibold ${role === "worker" ? "bg-accent border-accent text-ink" : "bg-ink border-line text-paper"}`}>Worker</button>
         </div>
         <button disabled={busy} onClick={add} className="w-full min-h-touch rounded-lg bg-accent text-ink font-bold disabled:opacity-50">Add</button>
       </div>
 
-      {(["laminator", "supervisor"] as const).map((r) => (
+      {(["laminator", "supervisor", "worker"] as const).map((r) => (
         <div key={r}>
           <h2 className="text-sm font-bold text-paper/60 uppercase mb-2">{r}s</h2>
           <div className="space-y-2">

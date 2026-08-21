@@ -5,7 +5,14 @@ Next.js 14 + TypeScript + Tailwind + Supabase + Resend, deployed to Vercel, inst
 
 ## 1. What's built
 
-- **Auth-gated wizard** (`/new`): JOB → MATERIALS → SITE → LAYUP → INSPECTION → PHOTOS → REVIEW, one screen
+- **Auth model**: workers don't sign in — they pick their own name from a dropdown (same pattern as the
+  Laminator/Supervisor fields) when submitting. **Only the admin area requires a login.** This trades away
+  the "no anonymous submission" barrier for speed: anyone with the link can submit a record, but only an
+  admin can browse, search, or read back past submissions, personnel, or recipient lists — the app's Row
+  Level Security policies enforce this at the database level (insert is public, select is admin-only).
+  If you need to lock submission down to known devices/people again later, the natural next step is a
+  shared team PIN gate in front of `/new`, short of full individual logins.
+- **Wizard** (`/new`): JOB → MATERIALS → SITE → LAYUP → INSPECTION → PHOTOS → REVIEW, one screen
   per section, large touch targets, sticky Next/Back, progress `n / 7`.
 - **Offline resilience**: form state is persisted to `localStorage` on every keystroke (Zustand), so a refresh
   or a dead zone on site never loses entered data. Submission uses a client-generated idempotency key so a

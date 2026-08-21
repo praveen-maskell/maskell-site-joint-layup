@@ -10,8 +10,7 @@ export default async function SubmissionDetailPage({ params }: { params: { id: s
       `*, materials:site_joint_materials(*), layup_steps:site_joint_layup_steps(*),
        inspections:site_joint_inspections(*), photos:site_joint_photos(*),
        laminator:authorised_personnel!site_joint_submissions_laminator_id_fkey(full_name),
-       supervisor:authorised_personnel!site_joint_submissions_supervisor_id_fkey(full_name),
-       submitter:profiles!site_joint_submissions_submitted_by_fkey(full_name)`
+       supervisor:authorised_personnel!site_joint_submissions_supervisor_id_fkey(full_name)`
     )
     .eq("id", params.id)
     .single();
@@ -111,7 +110,7 @@ export default async function SubmissionDetailPage({ params }: { params: { id: s
         <Grid>
           <Item label="Laminator" value={sub.laminator?.full_name} />
           <Item label="Supervisor" value={sub.supervisor?.full_name} />
-          <Item label="Submitted By" value={sub.submitter?.full_name} />
+          <Item label="Submitted By" value={sub.submitted_by_name} />
           <Item label="Submitted At" value={new Date(sub.submitted_at).toLocaleString("en-NZ")} />
         </Grid>
       </Section>

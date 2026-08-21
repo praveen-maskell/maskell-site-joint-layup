@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   const auth = await requireAdmin();
   if (!auth.ok) return NextResponse.json({ error: "Forbidden" }, { status: auth.status });
   const { full_name, role } = await req.json();
-  if (!full_name || !["laminator", "supervisor"].includes(role)) {
+  if (!full_name || !["laminator", "supervisor", "worker"].includes(role)) {
     return NextResponse.json({ error: "full_name and valid role required" }, { status: 400 });
   }
   const { error } = await auth.supabase.from("authorised_personnel").insert({ full_name, role });

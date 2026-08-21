@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabase, createServiceSupabase } from "@/lib/supabase/server";
+import { createServiceSupabase } from "@/lib/supabase/server";
 import { renderSiteJointPdf, type SubmissionPdfData } from "@/lib/pdf";
 import { sendSiteJointEmail } from "@/lib/email";
 
@@ -7,12 +7,10 @@ export async function POST(req: NextRequest) {
   const { submissionRecordId } = await req.json();
   if (!submissionRecordId) return NextResponse.json({ error: "submissionRecordId required" }, { status: 400 });
 
-  // Verify caller is authenticated and owns (or administers) this submission
-  const userSupabase = createServerSupabase();
-  const { data: userRes } = await userSupabase.auth.getUser();
-  if (!userRes.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  // Service client for the cross-table reads/writes this job needs
+  // No login is required to submit a Site Joint record, so there's no user
+  // session to check here — this route is only ever called right after a
+  // fresh insert with that record's own id, and it's idempotent (see the
+  // emailed_at guard below), so it's safe to run purely off the service role.
   const db = createServiceSupabase();
 
   const { data: sub, error: subErr } = await db
@@ -21,18 +19,13 @@ export async function POST(req: NextRequest) {
       `*, materials:site_joint_materials(*), layup_steps:site_joint_layup_steps(*),
        inspections:site_joint_inspections(*), photos:site_joint_photos(*),
        laminator:authorised_personnel!site_joint_submissions_laminator_id_fkey(full_name),
-       supervisor:authorised_personnel!site_joint_submissions_supervisor_id_fkey(full_name),
-       submitter:profiles!site_joint_submissions_submitted_by_fkey(full_name)`
+       supervisor:authorised_personnel!site_joint_submissions_supervisor_id_fkey(full_name)`
     )
     .eq("id", submissionRecordId)
     .single();
 
   if (subErr || !sub) return NextResponse.json({ error: "Submission not found" }, { status: 404 });
-  if (sub.submitted_by !== userRes.user.id) {
-    // only the submitter (or a future admin re-trigger) may finalize
-    const { data: profile } = await db.from("profiles").select("role").eq("id", userRes.user.id).single();
-    if (profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  if (sub.emailed_at) return NextResponse.json({ ok: true, alreadyFinalized: true });
 
   // signed URLs for photos so the PDF renderer can fetch them
   const photosWithUrls = await Promise.all(
@@ -61,7 +54,7 @@ export async function POST(req: NextRequest) {
     submitted_at: sub.submitted_at,
     laminator_name: sub.laminator?.full_name ?? "—",
     supervisor_name: sub.supervisor?.full_name ?? "—",
-    submitted_by_name: sub.submitter?.full_name ?? "—",
+    submitted_by_name: sub.submitted_by_name ?? "—",
     materials: sub.materials ?? { resin_weight_kg: 0, glass_weight_kg: 0, catalyst_weight_kg: 0, resin_batch_no: null, glass_batch_no: null, catalyst_batch_no: null },
     layup_steps: (sub.layup_steps ?? []).sort((a: any, b: any) => a.step_no - b.step_no),
     inspections: sub.inspections ?? [],

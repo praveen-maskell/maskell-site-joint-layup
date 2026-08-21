@@ -9,10 +9,14 @@ import { submitSiteJoint } from "@/lib/submit-site-joint";
 export default function ReviewStep() {
   const store = useWizardStore();
   const { data, submitting, submitError, set, setSubmitting, setSubmitError, reset } = store;
-  const { laminators, supervisors, loading } = usePersonnel();
+  const { laminators, supervisors, everyone, loading } = usePersonnel();
   const router = useRouter();
 
   function validate() {
+    if (!data.submitted_by_personnel_id) {
+      alert("Select your name.");
+      return false;
+    }
     if (!data.laminator_id || !data.supervisor_id) {
       alert("Select the Laminator and Supervisor.");
       return false;
@@ -39,6 +43,17 @@ export default function ReviewStep() {
     <div className="space-y-6">
       <h1 className="text-xl font-bold text-paper">Personnel &amp; Review</h1>
 
+      <SelectField
+        label="Your Name" required
+        value={data.submitted_by_personnel_id}
+        onChange={(v) => {
+          const person = everyone.find((p) => p.id === v);
+          set("submitted_by_personnel_id", v);
+          set("submitted_by_name", person?.full_name ?? "");
+        }}
+        options={everyone.map((p) => ({ value: p.id, label: p.full_name }))}
+        placeholder={loading ? "Loading..." : "Who's submitting this?"}
+      />
       <SelectField
         label="Laminator" required
         value={data.laminator_id}
