@@ -38,13 +38,12 @@ export interface SubmissionPdfData {
   job_number: string;
   resin_type: string | null;
   job_details: string | null;
-  temperature_c: number | null;
+  temperature_c: string | null;
   weather: string[];
   position_of_work: string;
   flocoat: boolean;
   flocoat_colour: string | null;
   flocoat_weight_kg: number | null;
-  wax_coat_details: string | null;
   submitted_at: string;
   work_date: string | null;
   laminator_names: string[];
@@ -97,7 +96,7 @@ export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>SITE CONDITIONS</Text>
           <View style={styles.row}>
-            <Field label="Temperature" value={d.temperature_c != null ? `${d.temperature_c} °C` : null} />
+            <Field label="Temperature" value={d.temperature_c ? `${d.temperature_c} °C` : null} />
             <Field label="Weather" value={d.weather.join(", ")} />
             <Field label="Position of Work" value={d.position_of_work} />
           </View>
@@ -129,7 +128,7 @@ export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
             <Field label="FloCoat Applied" value={d.flocoat ? "Yes" : "No"} />
             {d.flocoat && <Field label="Colour" value={d.flocoat_colour} />}
             {d.flocoat && <Field label="Weight" value={d.flocoat_weight_kg != null ? `${d.flocoat_weight_kg} kg` : null} />}
-            {d.flocoat && <Field label="Wax Coat" value={d.wax_coat_details} />}
+
           </View>
         </View>
 

@@ -27,7 +27,6 @@ export interface ConstructionStage {
   stage_no: number;
   position: ConstructionPosition | "";
   detail: string | null;
-  width_mm: string;
 }
 
 // A saved layup step record as read back from the database (PDF/admin views).
@@ -85,7 +84,6 @@ export interface WizardState {
   flocoat: boolean;
   flocoat_colour: string;
   flocoat_weight_kg: string;
-  wax_coat_details: string;
 
   // INSPECTION
   inspections: InspectionResult[];

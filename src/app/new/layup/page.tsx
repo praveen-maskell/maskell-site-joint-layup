@@ -15,35 +15,39 @@ import {
 const OTHER = "Other";
 
 // Small reusable "pick from predefined options, or type your own" control —
-// mirrors the pattern used across the layup section.
+// mirrors the pattern used across the layup section. Set includeOther=false
+// to offer only the predefined list (used for Check Joint Preparation).
 function DetailPicker({
-  label, value, predefined, onChange,
+  label, value, predefined, onChange, includeOther = true, otherLabel = "Detail (free text)",
 }: {
   label: string;
   value: string;
   predefined: string[];
   onChange: (v: string) => void;
+  includeOther?: boolean;
+  otherLabel?: string;
 }) {
   const [otherText, setOtherText] = useState("");
-  const isOther = !!value && !predefined.includes(value);
+  const isOther = includeOther && !!value && !predefined.includes(value);
 
   return (
     <div className="space-y-2">
       <span className="block text-sm font-medium text-paper/80">{label}</span>
       <SegmentedControl
-        options={[...predefined, OTHER]}
+        options={includeOther ? [...predefined, OTHER] : predefined}
         value={isOther ? OTHER : value}
         onChange={(v) => onChange(v === OTHER ? otherText : v)}
       />
       {isOther && (
         <TextField
-          label="Detail (free text)"
+          label={otherLabel}
+          required
           value={otherText || value}
           onChange={(v) => {
             setOtherText(v);
             onChange(v);
           }}
-          placeholder="Describe layup detail"
+          placeholder="Describe"
         />
       )}
     </div>
@@ -57,6 +61,15 @@ export default function LayupStep() {
     const stage1 = data.construction_stages[0];
     if (!stage1?.position || !stage1?.detail?.trim()) {
       alert("Construction Details — Stage 1 needs a Position and Layup selected.");
+      return false;
+    }
+    if (data.tack_detail.trim() && !data.tack_width_mm) {
+      alert("Enter the Tack Width — required once a Tack layup is selected.");
+      return false;
+    }
+    const finishIsOther = data.finish_detail && !FINISH_DETAIL_OPTIONS.includes(data.finish_detail);
+    if (finishIsOther && !data.finish_detail.trim()) {
+      alert("Enter comments for the Finish detail.");
       return false;
     }
     if (data.flocoat && !data.flocoat_colour) {
@@ -76,13 +89,16 @@ export default function LayupStep() {
 
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
         <span className="font-semibold text-paper">Check Joint Preparation</span>
-        <DetailPicker label="Detail" value={data.joint_prep_detail} predefined={JOINT_PREP_OPTIONS} onChange={(v) => set("joint_prep_detail", v)} />
+        <DetailPicker label="Detail" value={data.joint_prep_detail} predefined={JOINT_PREP_OPTIONS} includeOther={false} onChange={(v) => set("joint_prep_detail", v)} />
       </div>
 
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
         <span className="font-semibold text-paper">Construction Details - Tack</span>
         <DetailPicker label="Layup" value={data.tack_detail} predefined={TACK_DETAIL_OPTIONS} onChange={(v) => set("tack_detail", v)} />
-        <NumericField label="Width" unit="mm" value={data.tack_width_mm} onChange={(v) => set("tack_width_mm", v)} />
+        <NumericField
+          label="Width" unit="mm" required={!!data.tack_detail.trim()}
+          value={data.tack_width_mm} onChange={(v) => set("tack_width_mm", v)}
+        />
       </div>
 
       <div className="space-y-3">
@@ -106,11 +122,6 @@ export default function LayupStep() {
               predefined={CONSTRUCTION_LAYUP_OPTIONS}
               onChange={(v) => updateConstructionStage(stage.stage_no, { detail: v })}
             />
-            <NumericField
-              label="Width" unit="mm"
-              value={stage.width_mm}
-              onChange={(v) => updateConstructionStage(stage.stage_no, { width_mm: v })}
-            />
           </div>
         ))}
 
@@ -127,7 +138,7 @@ export default function LayupStep() {
 
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
         <span className="font-semibold text-paper">Finish - External</span>
-        <DetailPicker label="Detail" value={data.finish_detail} predefined={FINISH_DETAIL_OPTIONS} onChange={(v) => set("finish_detail", v)} />
+        <DetailPicker label="Detail" value={data.finish_detail} predefined={FINISH_DETAIL_OPTIONS} otherLabel="Comments" onChange={(v) => set("finish_detail", v)} />
         <NumericField label="Width" unit="mm" value={data.finish_width_mm} onChange={(v) => set("finish_width_mm", v)} />
       </div>
 
@@ -140,8 +151,7 @@ export default function LayupStep() {
         {data.flocoat && (
           <>
             <SelectField label="Colour" required value={data.flocoat_colour} onChange={(v) => set("flocoat_colour", v)} options={FLOCOAT_COLOURS.map((c) => ({ value: c, label: c }))} />
-            <NumericField label="FloCoat Weight" required unit="kg" value={data.flocoat_weight_kg} onChange={(v) => set("flocoat_weight_kg", v)} placeholder="e.g. 1.5" />
-            <TextField label="Wax Coat Details" value={data.wax_coat_details} onChange={(v) => set("wax_coat_details", v)} placeholder="If required" />
+            <NumericField label="Weight" required unit="kg" value={data.flocoat_weight_kg} onChange={(v) => set("flocoat_weight_kg", v)} placeholder="e.g. 1.5" />
           </>
         )}
       </div>

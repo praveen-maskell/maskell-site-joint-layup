@@ -27,13 +27,12 @@ function emptyState(): WizardState {
     joint_prep_detail: "",
     tack_detail: "",
     tack_width_mm: "",
-    construction_stages: [{ stage_no: 1, position: "", detail: null, width_mm: "" }],
+    construction_stages: [{ stage_no: 1, position: "", detail: null }],
     finish_detail: "",
     finish_width_mm: "",
     flocoat: false,
     flocoat_colour: "",
     flocoat_weight_kg: "",
-    wax_coat_details: "",
     inspections: INSPECTION_ITEMS.map((item) => ({ item, result: null, details: null })),
     photos: [],
     work_date: todayISO(),
@@ -98,7 +97,7 @@ export const useWizardStore = create<WizardStore>()(
               ...s.data,
               construction_stages: [
                 ...s.data.construction_stages,
-                { stage_no: nextNo, position: "", detail: null, width_mm: "" },
+                { stage_no: nextNo, position: "", detail: null },
               ],
             },
           };

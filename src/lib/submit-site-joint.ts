@@ -56,13 +56,12 @@ export async function submitSiteJoint(data: WizardState) {
       job_number: data.job_number,
       resin_type: data.resin_type || null,
       laminate_details: data.job_details || null,
-      temperature_c: data.temperature_c ? Number(data.temperature_c) : null,
+      temperature_c: data.temperature_c || null,
       weather: data.weather,
       position_of_work: data.position_of_work,
       flocoat: data.flocoat,
       flocoat_colour: data.flocoat_colour || null,
       flocoat_weight_kg: data.flocoat_weight_kg ? Number(data.flocoat_weight_kg) : null,
-      wax_coat_details: data.wax_coat_details || null,
       laminator_ids: data.laminator_ids,
       laminator_names: data.laminator_names,
       submitted_by_name: submittedByName,
@@ -113,7 +112,7 @@ export async function submitSiteJoint(data: WizardState) {
     if (s.detail && s.detail.trim()) {
       stepsToSave.push({
         step_no: stepNo++, step_label: `Construction Details - Stage ${idx + 1}`, detail: s.detail,
-        width_mm: s.width_mm ? Number(s.width_mm) : null, position: s.position || null,
+        width_mm: null, position: s.position || null,
       });
     }
   });

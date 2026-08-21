@@ -1,10 +1,9 @@
 "use client";
 
 import { useWizardStore } from "@/store/wizard-store";
-import { NumericField } from "@/components/ui/NumericField";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { WizardNav } from "@/components/wizard/WizardNav";
-import { WEATHER_OPTIONS, POSITION_OF_WORK_OPTIONS } from "@/lib/constants";
+import { WEATHER_OPTIONS, POSITION_OF_WORK_OPTIONS, TEMPERATURE_RANGES } from "@/lib/constants";
 
 export default function SiteStep() {
   const { data, set } = useWizardStore();
@@ -21,7 +20,10 @@ export default function SiteStep() {
     <div className="space-y-6">
       <h1 className="text-xl font-bold text-paper">Site Conditions</h1>
 
-      <NumericField label="Temperature" unit="°C" value={data.temperature_c} onChange={(v) => set("temperature_c", v)} placeholder="e.g. 18" />
+      <div>
+        <span className="block text-sm font-medium text-paper/80 mb-2">Temperature (°C)</span>
+        <SegmentedControl options={TEMPERATURE_RANGES} value={data.temperature_c} columns={3} onChange={(v) => set("temperature_c", v)} />
+      </div>
 
       <div>
         <span className="block text-sm font-medium text-paper/80 mb-2">Weather (select all that apply)</span>
