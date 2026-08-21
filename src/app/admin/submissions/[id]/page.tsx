@@ -92,7 +92,7 @@ export default async function SubmissionDetailPage({ params }: { params: { id: s
         <div className="space-y-1">
           {(sub.inspections ?? []).map((i: any) => (
             <div key={i.item} className="flex justify-between text-sm border-b border-line py-1">
-              <span className="text-paper/70">{i.item}</span>
+              <span className="text-paper/70">Free from {i.item}</span>
               <span className={i.result === "OK" ? "text-good font-semibold" : "text-bad font-semibold"}>
                 {i.result}{i.details ? ` — ${i.details}` : ""}
               </span>

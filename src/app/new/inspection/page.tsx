@@ -28,7 +28,7 @@ export default function InspectionStep() {
 
       {data.inspections.map((insp) => (
         <div key={insp.item} className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
-          <span className="font-semibold text-paper">{insp.item}</span>
+          <span className="font-semibold text-paper">Free from {insp.item}</span>
           <OkDefectToggle value={insp.result} onChange={(v) => updateInspection(insp.item, { result: v, details: v === "OK" ? null : insp.details })} />
           {insp.result === "DEFECT" && (
             <TextField

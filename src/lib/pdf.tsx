@@ -140,7 +140,7 @@ export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
             </View>
             {d.inspections.map((i) => (
               <View style={styles.tr} key={i.item}>
-                <Text style={styles.td}>{i.item}</Text>
+                <Text style={styles.td}>Free from {i.item}</Text>
                 <Text style={[styles.td, i.result === "OK" ? styles.ok : styles.defect]}>{i.result}</Text>
                 <Text style={[styles.td, { flex: 2 }]}>{i.details ?? "—"}</Text>
               </View>
