@@ -25,8 +25,26 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const auth = await requireAdmin();
   if (!auth.ok) return NextResponse.json({ error: "Forbidden" }, { status: auth.status });
-  const { id, active } = await req.json();
-  const { error } = await auth.supabase.from("authorised_personnel").update({ active }).eq("id", id);
+  const { id, active, full_name, role } = await req.json();
+  if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+
+  const update: Record<string, unknown> = {};
+  if (typeof active === "boolean") update.active = active;
+  if (typeof full_name === "string") {
+    if (!full_name.trim()) return NextResponse.json({ error: "full_name cannot be empty" }, { status: 400 });
+    update.full_name = full_name.trim();
+  }
+  if (typeof role === "string") {
+    if (!["laminator", "supervisor", "worker"].includes(role)) {
+      return NextResponse.json({ error: "invalid role" }, { status: 400 });
+    }
+    update.role = role;
+  }
+  if (Object.keys(update).length === 0) {
+    return NextResponse.json({ error: "nothing to update" }, { status: 400 });
+  }
+
+  const { error } = await auth.supabase.from("authorised_personnel").update(update).eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
   return NextResponse.json({ ok: true });
 }
