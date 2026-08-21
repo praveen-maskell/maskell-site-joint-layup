@@ -6,6 +6,8 @@ export const WEATHER_OPTIONS: WeatherOption[] = [
 
 export const RESIN_TYPES: ResinType[] = ["580T", "580N", "901", "907"];
 
+export const CATALYST_PERCENTAGE_OPTIONS = ["1%", "1.25%", "1.5%", "1.75%", "2%"];
+
 export const POSITION_OF_WORK_OPTIONS: PositionOfWork[] = [
   "In Trench", "Out of Trench", "Supported Above Ground",
   "Inside", "Outside", "Ground Level and Cradles",

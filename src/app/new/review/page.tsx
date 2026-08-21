@@ -40,7 +40,7 @@ export default function ReviewStep() {
         <Row label="Submitted By" value={data.submitted_by_name} />
         <Row label="Job Number" value={data.job_number} />
         <Row label="Resin" value={data.resin_type} />
-        <Row label="Materials" value={`Resin ${data.resin_weight_kg}kg · Glass ${data.glass_weight_kg}kg · Cat ${data.catalyst_percentage}%`} />
+        <Row label="Materials" value={`Resin ${data.resin_weight_kg}kg · Glass ${data.glass_weight_kg}kg · Cat ${data.catalyst_percentage}`} />
         <Row label="Site" value={`${data.temperature_c || "—"}°C, ${data.weather.join(", ") || "—"}, ${data.position_of_work}`} />
         <Row label="Layup steps" value={`${data.layup_steps.filter((s) => s.detail && s.detail !== "N/A").length} completed`} />
         <Row label="FloCoat" value={data.flocoat ? `Yes — ${data.flocoat_colour}` : "No"} />

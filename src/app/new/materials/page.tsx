@@ -5,7 +5,7 @@ import { NumericField } from "@/components/ui/NumericField";
 import { TextField } from "@/components/ui/TextField";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { WizardNav } from "@/components/wizard/WizardNav";
-import { RESIN_TYPES } from "@/lib/constants";
+import { RESIN_TYPES, CATALYST_PERCENTAGE_OPTIONS } from "@/lib/constants";
 
 export default function MaterialsStep() {
   const { data, set } = useWizardStore();
@@ -43,7 +43,10 @@ export default function MaterialsStep() {
       <NumericField label="Glass Weight" required unit="kg" value={data.glass_weight_kg} onChange={(v) => set("glass_weight_kg", v)} placeholder="8.2" />
       <TextField label="Glass Batch No." value={data.glass_batch_no} onChange={(v) => set("glass_batch_no", v)} />
 
-      <NumericField label="Catalyst" required unit="%" value={data.catalyst_percentage} onChange={(v) => set("catalyst_percentage", v)} placeholder="2" />
+      <div>
+        <span className="block text-sm font-medium text-paper/80 mb-2">Catalyst <span className="text-accent">*</span></span>
+        <SegmentedControl options={CATALYST_PERCENTAGE_OPTIONS} value={data.catalyst_percentage} columns={3} onChange={(v) => set("catalyst_percentage", v)} />
+      </div>
 
       <WizardNav backHref="/new" nextHref="/new/site" onBeforeNext={validate} />
     </div>

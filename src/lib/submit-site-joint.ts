@@ -80,7 +80,7 @@ export async function submitSiteJoint(data: WizardState) {
     submission_id: submissionRecordId,
     resin_weight_kg: Number(data.resin_weight_kg),
     glass_weight_kg: Number(data.glass_weight_kg),
-    catalyst_percentage: Number(data.catalyst_percentage),
+    catalyst_percentage: parseFloat(data.catalyst_percentage),
     resin_batch_no: data.resin_batch_no,
     glass_batch_no: data.glass_batch_no || null,
   });
