@@ -36,50 +36,81 @@ export async function submitSiteJoint(data: WizardState) {
     .eq("job_number", data.job_number)
     .single();
 
-  const { data: idRes, error: idErr } = await supabase.rpc("next_submission_id");
-  if (idErr) throw idErr;
-  const submissionId: string = idRes;
-
   // Generate the row's primary key ourselves rather than asking Postgres to
   // hand it back via RETURNING — RETURNING requires the SELECT policy to
   // also pass, and SELECT on this table is admin-only by design (so no one
   // can browse other people's submissions). Insert-only avoids that entirely.
   const submissionRecordId = uuid();
 
-  const { error: subErr } = await supabase
-    .from("site_joint_submissions")
-    .insert({
-      id: submissionRecordId,
-      submission_id: submissionId,
-      idempotency_key: data.draftId,
-      job_id: job?.id,
-      job_number: data.job_number,
-      resin_type: data.resin_type || null,
-      laminate_details: data.job_details || null,
-      temperature_c: data.temperature_c || null,
-      weather: data.weather,
-      position_of_work: data.position_of_work,
-      flocoat: data.flocoat,
-      flocoat_colour: data.flocoat_colour || null,
-      flocoat_weight_kg: data.flocoat_weight_kg ? Number(data.flocoat_weight_kg) : null,
-      laminator_ids: data.laminator_ids,
-      laminator_names: data.laminator_names,
-      submitted_by_name: submittedByName,
-      work_date: data.work_date || null,
-    });
-  if (subErr) {
-    // Unique violation on idempotency_key means a concurrent/duplicate retry
-    // beat us to it — look it up rather than surfacing an error.
-    if ((subErr as any).code === "23505") {
-      const retryRes = await fetch("/api/submissions/lookup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idempotencyKey: data.draftId }),
+  // Serial number: JobNumber-DDMMYYYY (e.g. "12345-21082026"), used as both
+  // the human-readable record ID and the PDF filename. If the same job
+  // number already has a submission for that date, a "-2", "-3", ... suffix
+  // is appended until a free one is found.
+  function buildSerial(attempt: number): string {
+    const [y, m, d] = data.work_date.split("-");
+    const base = `${data.job_number}-${d}${m}${y}`;
+    return attempt === 0 ? base : `${base}-${attempt + 1}`;
+  }
+
+  let submissionId = buildSerial(0);
+  let attempt = 0;
+  let inserted = false;
+  let lastError: any = null;
+
+  while (!inserted && attempt < 25) {
+    const { error: subErr } = await supabase
+      .from("site_joint_submissions")
+      .insert({
+        id: submissionRecordId,
+        submission_id: submissionId,
+        idempotency_key: data.draftId,
+        job_id: job?.id,
+        job_number: data.job_number,
+        resin_type: data.resin_type || null,
+        laminate_details: data.job_details || null,
+        temperature_c: data.temperature_c || null,
+        weather: data.weather,
+        position_of_work: data.position_of_work,
+        flocoat: data.flocoat,
+        flocoat_colour: data.flocoat_colour || null,
+        flocoat_weight_kg: data.flocoat_weight_kg ? Number(data.flocoat_weight_kg) : null,
+        laminator_ids: data.laminator_ids,
+        laminator_names: data.laminator_names,
+        submitted_by_name: submittedByName,
+        work_date: data.work_date || null,
       });
-      const { submission: retried } = await retryRes.json();
-      if (retried) return { submissionRecordId: retried.id, submissionId: retried.submission_id };
+
+    if (!subErr) {
+      inserted = true;
+      break;
+    }
+
+    lastError = subErr;
+    if ((subErr as any).code === "23505") {
+      const msg = (subErr as any).message || "";
+      if (msg.includes("idempotency_key")) {
+        // A concurrent/duplicate retry with this exact draft beat us to it —
+        // look it up rather than surfacing an error.
+        const retryRes = await fetch("/api/submissions/lookup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idempotencyKey: data.draftId }),
+        });
+        const { submission: retried } = await retryRes.json();
+        if (retried) return { submissionRecordId: retried.id, submissionId: retried.submission_id };
+        throw subErr;
+      }
+      // Otherwise it's the submission_id (serial number) colliding with an
+      // existing record for this job/date — try the next suffix.
+      attempt++;
+      submissionId = buildSerial(attempt);
+      continue;
     }
     throw subErr;
+  }
+
+  if (!inserted) {
+    throw lastError || new Error("Could not generate a unique serial number after multiple attempts.");
   }
 
   await supabase.from("site_joint_materials").insert({

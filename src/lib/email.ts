@@ -13,7 +13,7 @@ export async function sendSiteJointEmail(d: SubmissionPdfData, recipients: strin
 
   const html = `
     <div style="font-family: Arial, sans-serif; color:#111; max-width:600px;">
-      <h2 style="margin-bottom:4px;">Site Joint Completed</h2>
+      <h2 style="margin-bottom:4px;">Site Joint Material Sheet</h2>
       <p style="color:#555;margin-top:0;">${d.submission_id} · ${new Date(d.submitted_at).toLocaleString("en-NZ")}</p>
       <table style="width:100%; border-collapse:collapse; font-size:14px;">
         ${row("Job Number", d.job_number)}
@@ -33,7 +33,7 @@ export async function sendSiteJointEmail(d: SubmissionPdfData, recipients: strin
   const { data, error } = await resend.emails.send({
     from: process.env.EMAIL_FROM!,
     to: recipients,
-    subject: `SITE JOINT COMPLETED — JOB ${d.job_number} — ${d.submission_id}`,
+    subject: `Site Joint Material Sheet — JOB ${d.job_number} — ${d.submission_id}`,
     html,
     attachments: [
       {

@@ -63,7 +63,7 @@ export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
         <View style={styles.header}>
           <View>
             <Text style={styles.brand}>MASKELL PRODUCTIONS LTD</Text>
-            <Text style={styles.sub}>Site Joint Layup Record — QA Document (ref. Form F.5.65)</Text>
+            <Text style={styles.sub}>Site Joint Material Sheet — QA Document (ref. Form F.5.65)</Text>
           </View>
           <View style={{ alignItems: "flex-end" }}>
             <Text style={{ fontSize: 11, fontWeight: 700 }}>{d.submission_id}</Text>
