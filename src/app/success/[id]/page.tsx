@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { createServiceSupabase } from "@/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function SuccessPage({ params }: { params: { id: string } }) {
   const supabase = createServiceSupabase();
   const { data: sub } = await supabase

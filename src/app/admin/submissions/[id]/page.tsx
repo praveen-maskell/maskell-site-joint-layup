@@ -2,6 +2,9 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { ResendButton } from "@/components/admin/ResendButton";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function SubmissionDetailPage({ params }: { params: { id: string } }) {
   const supabase = createServerSupabase();
 
