@@ -30,7 +30,7 @@ export async function sendSiteJointEmail(d: SubmissionPdfData, recipients: strin
     </div>
   `;
 
-  await resend.emails.send({
+  const { data, error } = await resend.emails.send({
     from: process.env.EMAIL_FROM!,
     to: recipients,
     subject: `SITE JOINT COMPLETED — JOB ${d.job_number} — ${d.submission_id}`,
@@ -42,6 +42,11 @@ export async function sendSiteJointEmail(d: SubmissionPdfData, recipients: strin
       },
     ],
   });
+
+  if (error) {
+    throw new Error(`Resend rejected the email: ${error.message || JSON.stringify(error)}`);
+  }
+  return data;
 }
 
 function row(label: string, value: string) {
