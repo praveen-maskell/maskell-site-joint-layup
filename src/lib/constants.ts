@@ -4,7 +4,7 @@ export const WEATHER_OPTIONS: WeatherOption[] = [
   "Sunny", "Windy", "Overcast", "Raining", "Hail", "Fog", "Snow",
 ];
 
-export const RESIN_TYPES: ResinType[] = ["580T", "580N", "901", "907"];
+export const RESIN_TYPES: ResinType[] = ["580T", "BPO", "901", "907"];
 
 export const TEMPERATURE_RANGES = [
   "-10 to 0", "0-5", "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50",
