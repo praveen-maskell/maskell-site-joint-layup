@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import imageCompression from "browser-image-compression";
 import type { CapturedPhoto, PhotoType } from "@/lib/types";
 
 export function PhotoCapture({
@@ -22,15 +21,11 @@ export function PhotoCapture({
     if (!file) return;
     setBusy(true);
     try {
-      // Compress but keep QA-usable quality — cap at 1920px / ~1.5MB
-      const compressed = await imageCompression(file, {
-        maxWidthOrHeight: 2560,
-        maxSizeMB: 4,
-        useWebWorker: true,
-        initialQuality: 0.92,
-      });
-      const previewUrl = URL.createObjectURL(compressed);
-      onCapture({ photo_type: photoType, file: compressed as File, previewUrl });
+      // Uploaded at full original size/quality — no client-side compression.
+      // The PDF that gets emailed uses a separately resized copy (generated
+      // server-side) so email delivery stays reliable regardless.
+      const previewUrl = URL.createObjectURL(file);
+      onCapture({ photo_type: photoType, file, previewUrl });
     } finally {
       setBusy(false);
     }

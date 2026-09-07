@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
-import imageCompression from "browser-image-compression";
+import { useRef } from "react";
 import { useWizardStore } from "@/store/wizard-store";
 import { PhotoCapture } from "@/components/ui/PhotoCapture";
 import { WizardNav } from "@/components/wizard/WizardNav";
@@ -12,7 +11,6 @@ const REQUIRED_PHOTOS: PhotoType[] = ["Joint Before Work", "Completed Joint / La
 export default function PhotosStep() {
   const { data, addPhoto, removePhoto } = useWizardStore();
   const extraInputRef = useRef<HTMLInputElement>(null);
-  const [busy, setBusy] = useState(false);
 
   function findPhoto(type: PhotoType) {
     return data.photos.find((p) => p.photo_type === type);
@@ -24,19 +22,8 @@ export default function PhotosStep() {
 
   async function handleExtraFile(file: File | undefined) {
     if (!file) return;
-    setBusy(true);
-    try {
-      const compressed = await imageCompression(file, {
-        maxWidthOrHeight: 2560,
-        maxSizeMB: 4,
-        useWebWorker: true,
-        initialQuality: 0.92,
-      });
-      const previewUrl = URL.createObjectURL(compressed);
-      addPhoto({ photo_type: "Additional Photo", file: compressed as File, previewUrl });
-    } finally {
-      setBusy(false);
-    }
+    const previewUrl = URL.createObjectURL(file);
+    addPhoto({ photo_type: "Additional Photo", file, previewUrl });
   }
 
   function validate() {
@@ -86,11 +73,10 @@ export default function PhotosStep() {
 
       <button
         type="button"
-        disabled={busy}
         onClick={() => extraInputRef.current?.click()}
-        className="w-full min-h-touch rounded-xl border-2 border-dashed border-line text-paper/60 font-semibold disabled:opacity-50"
+        className="w-full min-h-touch rounded-xl border-2 border-dashed border-line text-paper/60 font-semibold"
       >
-        {busy ? "Processing..." : "+ Add Another Photo"}
+        + Add Another Photo
       </button>
       <input
         ref={extraInputRef}

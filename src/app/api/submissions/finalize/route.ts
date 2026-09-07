@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import sharp from "sharp";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { renderSiteJointPdf, type SubmissionPdfData } from "@/lib/pdf";
 import { sendSiteJointEmail } from "@/lib/email";
@@ -31,11 +32,33 @@ export async function POST(req: NextRequest) {
     if (!sub) return NextResponse.json({ error: "Submission not found" }, { status: 404 });
     if (sub.emailed_at && !force) return NextResponse.json({ ok: true, alreadyFinalized: true });
 
-    // signed URLs for photos so the PDF renderer can fetch them
+    // The originals in storage stay at whatever full resolution the worker
+    // uploaded — we never touch those. For the PDF that gets emailed,
+    // though, we resize a copy here: a handful of full-resolution phone
+    // photos embedded raw could easily push the email attachment past what
+    // mail providers accept, so this keeps delivery reliable regardless of
+    // how large the source photos are.
     const photosWithUrls = await Promise.all(
       (sub.photos ?? []).map(async (p: any) => {
         const { data } = await db.storage.from("site-joint-photos").createSignedUrl(p.storage_path, 300);
-        return { photo_type: p.photo_type, signedUrl: data?.signedUrl ?? "" };
+        const signedUrl = data?.signedUrl ?? "";
+        if (!signedUrl) return { photo_type: p.photo_type, signedUrl: "" };
+
+        try {
+          const res = await fetch(signedUrl);
+          const arrayBuffer = await res.arrayBuffer();
+          const resized = await sharp(Buffer.from(arrayBuffer))
+            .rotate() // respect EXIF orientation from phone cameras
+            .resize({ width: 1600, height: 1600, fit: "inside", withoutEnlargement: true })
+            .jpeg({ quality: 82 })
+            .toBuffer();
+          const dataUri = `data:image/jpeg;base64,${resized.toString("base64")}`;
+          return { photo_type: p.photo_type, signedUrl: dataUri };
+        } catch {
+          // If resizing fails for any reason, fall back to the original
+          // signed URL so the PDF still gets a photo rather than a blank box.
+          return { photo_type: p.photo_type, signedUrl };
+        }
       })
     );
 
