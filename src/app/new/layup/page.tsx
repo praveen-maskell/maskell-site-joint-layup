@@ -95,6 +95,10 @@ export default function LayupStep() {
       alert("Enter comments for the Finish detail.");
       return false;
     }
+    if (!data.finish_width_mm) {
+      alert("Enter the Finish Weld Width.");
+      return false;
+    }
     if (data.flocoat && !data.flocoat_colour) {
       alert("Select a FloCoat colour.");
       return false;
@@ -177,7 +181,7 @@ export default function LayupStep() {
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
         <span className="font-semibold text-paper">Finish - External</span>
         <DetailPicker label="Detail" value={data.finish_detail} predefined={FINISH_DETAIL_OPTIONS} otherLabel="Comments" onChange={(v) => set("finish_detail", v)} />
-        <NumericField label="Width" unit="mm" value={data.finish_width_mm} onChange={(v) => set("finish_width_mm", v)} />
+        <NumericField label="Finish Weld Width" required unit="mm" value={data.finish_width_mm} onChange={(v) => set("finish_width_mm", v)} />
       </div>
 
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">

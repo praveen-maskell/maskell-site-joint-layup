@@ -17,10 +17,10 @@ const styles = StyleSheet.create({
   td: { flex: 1, padding: 3, fontSize: 8 },
   ok: { color: "#1a7a3c", fontWeight: 700 },
   defect: { color: "#b3251b", fontWeight: 700 },
-  photoPageTitle: { fontSize: 11, fontWeight: 700, marginBottom: 14 },
-  photoBlock: { marginBottom: 20 },
-  photoImgLarge: { width: "100%", height: 330, objectFit: "cover", border: "1 solid #ccc" },
-  photoCaptionLarge: { fontSize: 10, fontWeight: 700, marginTop: 6, textAlign: "center" },
+  photoPageTitle: { fontSize: 11, fontWeight: 700, marginBottom: 12 },
+  photoBlock: { marginBottom: 14 },
+  photoImgLarge: { width: "100%", height: 220, objectFit: "cover", border: "1 solid #ccc" },
+  photoCaptionLarge: { fontSize: 9, fontWeight: 700, marginTop: 5, textAlign: "center" },
   footer: { position: "absolute", bottom: 20, left: 32, right: 32, fontSize: 7, color: "#888", flexDirection: "row", justifyContent: "space-between", borderTop: "1 solid #ddd", paddingTop: 4 },
 });
 
@@ -66,7 +66,7 @@ export interface SubmissionPdfData {
 }
 
 export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
-  const PHOTOS_PER_PAGE = 2;
+  const PHOTOS_PER_PAGE = 3;
   const photoPages: SubmissionPdfData["photos"][] = [];
   for (let i = 0; i < d.photos.length; i += PHOTOS_PER_PAGE) {
     photoPages.push(d.photos.slice(i, i + PHOTOS_PER_PAGE));

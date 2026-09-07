@@ -8,6 +8,7 @@ export default function ReviewStep() {
   const store = useWizardStore();
   const { data, submitting, submitError, set, setSubmitting, setSubmitError, reset } = store;
   const router = useRouter();
+  const todayStr = new Date().toISOString().slice(0, 10);
 
   function validate() {
     if (data.laminator_ids.length === 0) {
@@ -16,6 +17,10 @@ export default function ReviewStep() {
     }
     if (!data.work_date) {
       alert("Confirm the work date.");
+      return false;
+    }
+    if (data.work_date > todayStr) {
+      alert("Work Date can't be in the future.");
       return false;
     }
     return true;
@@ -60,6 +65,7 @@ export default function ReviewStep() {
           <input
             type="date"
             value={data.work_date}
+            max={todayStr}
             onChange={(e) => set("work_date", e.target.value)}
             className="w-full min-h-touch rounded-xl bg-ink border-2 border-line px-4 text-lg text-paper focus:border-accent focus:outline-none"
           />

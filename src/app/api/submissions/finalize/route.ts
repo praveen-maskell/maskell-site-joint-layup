@@ -49,8 +49,8 @@ export async function POST(req: NextRequest) {
           const arrayBuffer = await res.arrayBuffer();
           const resized = await sharp(Buffer.from(arrayBuffer))
             .rotate() // respect EXIF orientation from phone cameras
-            .resize({ width: 1600, height: 1600, fit: "inside", withoutEnlargement: true })
-            .jpeg({ quality: 82 })
+            .resize({ width: 1800, height: 1800, fit: "inside", withoutEnlargement: true })
+            .jpeg({ quality: 90 })
             .toBuffer();
           const dataUri = `data:image/jpeg;base64,${resized.toString("base64")}`;
           return { photo_type: p.photo_type, signedUrl: dataUri };
