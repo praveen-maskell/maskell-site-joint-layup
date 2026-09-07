@@ -17,12 +17,21 @@ const styles = StyleSheet.create({
   td: { flex: 1, padding: 3, fontSize: 8 },
   ok: { color: "#1a7a3c", fontWeight: 700 },
   defect: { color: "#b3251b", fontWeight: 700 },
-  photosRow: { flexDirection: "row", gap: 6, marginTop: 4 },
-  photoBox: { width: 150 },
-  photoImg: { width: 150, height: 110, objectFit: "cover" },
-  photoCaption: { fontSize: 7, marginTop: 2, textAlign: "center" },
+  photoPageTitle: { fontSize: 11, fontWeight: 700, marginBottom: 14 },
+  photoBlock: { marginBottom: 20 },
+  photoImgLarge: { width: "100%", height: 330, objectFit: "cover", border: "1 solid #ccc" },
+  photoCaptionLarge: { fontSize: 10, fontWeight: 700, marginTop: 6, textAlign: "center" },
   footer: { position: "absolute", bottom: 20, left: 32, right: 32, fontSize: 7, color: "#888", flexDirection: "row", justifyContent: "space-between", borderTop: "1 solid #ddd", paddingTop: 4 },
 });
+
+function Footer() {
+  return (
+    <View style={styles.footer} fixed>
+      <Text>Form F.5.65 (1055-25) digital record — Maskell Productions Ltd QA System</Text>
+      <Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
+    </View>
+  );
+}
 
 function Field({ label, value }: { label: string; value: string | number | null | undefined }) {
   return (
@@ -57,6 +66,12 @@ export interface SubmissionPdfData {
 }
 
 export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
+  const PHOTOS_PER_PAGE = 2;
+  const photoPages: SubmissionPdfData["photos"][] = [];
+  for (let i = 0; i < d.photos.length; i += PHOTOS_PER_PAGE) {
+    photoPages.push(d.photos.slice(i, i + PHOTOS_PER_PAGE));
+  }
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -150,26 +165,24 @@ export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
           </View>
         </View>
 
-        {d.photos.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>PHOTOS</Text>
-            <View style={styles.photosRow}>
-              {d.photos.map((p) => (
-                <View style={styles.photoBox} key={p.photo_type}>
-                  {/* eslint-disable-next-line jsx-a11y/alt-text */}
-                  <Image src={p.signedUrl} style={styles.photoImg} />
-                  <Text style={styles.photoCaption}>{p.photo_type}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        )}
-
-        <View style={styles.footer} fixed>
-          <Text>Form F.5.65 (1055-25) digital record — Maskell Productions Ltd QA System</Text>
-          <Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
-        </View>
+        <Footer />
       </Page>
+
+      {photoPages.map((pagePhotos, pageIdx) => (
+        <Page size="A4" style={styles.page} key={pageIdx}>
+          <Text style={styles.photoPageTitle}>
+            PHOTOS — {d.submission_id} ({pageIdx + 1} / {photoPages.length})
+          </Text>
+          {pagePhotos.map((p, i) => (
+            <View style={styles.photoBlock} key={i}>
+              {/* eslint-disable-next-line jsx-a11y/alt-text */}
+              <Image src={p.signedUrl} style={styles.photoImgLarge} />
+              <Text style={styles.photoCaptionLarge}>{p.photo_type}</Text>
+            </View>
+          ))}
+          <Footer />
+        </Page>
+      ))}
     </Document>
   );
 }
