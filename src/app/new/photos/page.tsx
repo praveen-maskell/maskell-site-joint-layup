@@ -27,10 +27,10 @@ export default function PhotosStep() {
     setBusy(true);
     try {
       const compressed = await imageCompression(file, {
-        maxWidthOrHeight: 1920,
-        maxSizeMB: 1.5,
+        maxWidthOrHeight: 2560,
+        maxSizeMB: 4,
         useWebWorker: true,
-        initialQuality: 0.85,
+        initialQuality: 0.92,
       });
       const previewUrl = URL.createObjectURL(compressed);
       addPhoto({ photo_type: "Additional Photo", file: compressed as File, previewUrl });

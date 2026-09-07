@@ -24,10 +24,10 @@ export function PhotoCapture({
     try {
       // Compress but keep QA-usable quality — cap at 1920px / ~1.5MB
       const compressed = await imageCompression(file, {
-        maxWidthOrHeight: 1920,
-        maxSizeMB: 1.5,
+        maxWidthOrHeight: 2560,
+        maxSizeMB: 4,
         useWebWorker: true,
-        initialQuality: 0.85,
+        initialQuality: 0.92,
       });
       const previewUrl = URL.createObjectURL(compressed);
       onCapture({ photo_type: photoType, file: compressed as File, previewUrl });
