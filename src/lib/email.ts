@@ -26,7 +26,7 @@ export async function sendSiteJointEmail(d: SubmissionPdfData, recipients: strin
         ${row("Site Conditions", `${d.temperature_c ?? "—"}°C, ${d.weather.join(", ") || "—"}, ${d.position_of_work}`)}
         ${row("Inspection Result", inspectionResult)}
       </table>
-      <p style="margin-top:16px;color:#555;font-size:12px;">Full QA record attached as PDF. Photos are stored in Supabase and viewable via the admin portal.</p>
+      <p style="margin-top:16px;color:#555;font-size:12px;">Full QA record attached as PDF. Photos are stored in the cloud and viewable via the admin portal.</p>
     </div>
   `;
 
