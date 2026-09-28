@@ -89,7 +89,7 @@ export default function ReviewStep() {
       <div className="sticky bottom-0 z-20 bg-ink/95 backdrop-blur border-t border-line px-4 py-3">
         <button
           type="button"
-          onClick={() => router.push("/new/photos")}
+          onClick={() => router.push("/layup/photos")}
           className="w-full min-h-touch rounded-xl border-2 border-line text-paper font-bold text-lg active:scale-[0.98]"
         >
           Back

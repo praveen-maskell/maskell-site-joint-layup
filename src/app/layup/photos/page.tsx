@@ -124,7 +124,7 @@ export default function PhotosStep() {
         onChange={(e) => handleFile(e.target.files?.[0], "Additional Photo")}
       />
 
-      <WizardNav backHref="/new/inspection" nextHref="/new/review" onBeforeNext={validate} />
+      <WizardNav backHref="/layup/inspection" nextHref="/layup/review" onBeforeNext={validate} />
     </div>
   );
 }

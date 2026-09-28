@@ -37,7 +37,7 @@ export default function SiteStep() {
 
       <p className="text-paper/40 text-xs">Work date is confirmed at the end of the form.</p>
 
-      <WizardNav backHref="/new" nextHref="/new/materials" onBeforeNext={validate} />
+      <WizardNav backHref="/layup" nextHref="/layup/materials" onBeforeNext={validate} />
     </div>
   );
 }

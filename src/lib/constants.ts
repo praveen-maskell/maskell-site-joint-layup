@@ -35,11 +35,11 @@ export const FINISH_DETAIL_OPTIONS = ["Resin Rich Finish", "Surfacing Veil + Top
 export const FLOCOAT_COLOURS = ["White", "Green (Fluorescent)", "Green", "Black"];
 
 export const WIZARD_STEPS = [
-  { path: "/new", label: "Job" },
-  { path: "/new/site", label: "Site" },
-  { path: "/new/materials", label: "Materials" },
-  { path: "/new/layup", label: "Layup" },
-  { path: "/new/inspection", label: "Inspection" },
-  { path: "/new/photos", label: "Photos" },
-  { path: "/new/review", label: "Review" },
+  { path: "/layup", label: "Job" },
+  { path: "/layup/site", label: "Site" },
+  { path: "/layup/materials", label: "Materials" },
+  { path: "/layup/layup", label: "Layup" },
+  { path: "/layup/inspection", label: "Inspection" },
+  { path: "/layup/photos", label: "Photos" },
+  { path: "/layup/review", label: "Review" },
 ] as const;

@@ -23,7 +23,7 @@ export function LoginForm() {
       setError("Login failed. Check your email and password, or contact your admin.");
       return;
     }
-    router.push(params.get("next") || "/new");
+    router.push(params.get("next") || "/layup");
     router.refresh();
   }
 

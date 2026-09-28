@@ -66,7 +66,7 @@ export default function JobStep() {
 
       <TextField label="Job Details" required value={data.job_details} onChange={(v) => set("job_details", v)} placeholder="Describe the job" />
 
-      <WizardNav nextHref="/new/site" onBeforeNext={validate} />
+      <WizardNav nextHref="/layup/site" onBeforeNext={validate} />
     </div>
   );
 }

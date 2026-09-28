@@ -28,7 +28,7 @@ export default async function SuccessPage({ params }: { params: { id: string } }
       )}
       <p className="text-paper/50 text-sm mb-8">Submitted successfully. A QA record has been emailed to the notification list.</p>
       <Link
-        href="/new"
+        href="/layup"
         className="min-h-touch w-full max-w-xs rounded-xl bg-accent text-ink font-bold text-lg flex items-center justify-center"
       >
         Start Next Joint

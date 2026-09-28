@@ -224,7 +224,7 @@ export default function LayupStep() {
         )}
       </div>
 
-      <WizardNav backHref="/new/materials" nextHref="/new/inspection" onBeforeNext={validate} />
+      <WizardNav backHref="/layup/materials" nextHref="/layup/inspection" onBeforeNext={validate} />
     </div>
   );
 }

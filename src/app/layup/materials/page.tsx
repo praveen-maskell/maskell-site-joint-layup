@@ -52,7 +52,7 @@ export default function MaterialsStep() {
         <SegmentedControl options={CATALYST_PERCENTAGE_OPTIONS} value={data.catalyst_percentage} columns={3} onChange={(v) => set("catalyst_percentage", v)} />
       </div>
 
-      <WizardNav backHref="/new/site" nextHref="/new/layup" onBeforeNext={validate} />
+      <WizardNav backHref="/layup/site" nextHref="/layup/layup" onBeforeNext={validate} />
     </div>
   );
 }

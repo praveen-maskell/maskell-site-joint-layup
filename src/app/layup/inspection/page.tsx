@@ -42,7 +42,7 @@ export default function InspectionStep() {
         </div>
       ))}
 
-      <WizardNav backHref="/new/layup" nextHref="/new/photos" onBeforeNext={validate} />
+      <WizardNav backHref="/layup/layup" nextHref="/layup/photos" onBeforeNext={validate} />
     </div>
   );
 }

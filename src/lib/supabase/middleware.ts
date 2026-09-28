@@ -1,7 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Only the admin area requires a login. The wizard (/new, /success) and the
+// Only the admin area requires a login. The wizard (/layup, /timesheet, /success) and the
 // API routes it calls are open to anyone with the link — workers identify
 // themselves by picking their name in the form instead of signing in.
 export async function updateSession(request: NextRequest) {
@@ -49,7 +49,7 @@ export async function updateSession(request: NextRequest) {
     .single();
   if (!profile || profile.role !== "admin" || !profile.active) {
     const url = request.nextUrl.clone();
-    url.pathname = "/new";
+    url.pathname = "/layup";
     return NextResponse.redirect(url);
   }
 

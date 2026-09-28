@@ -10,7 +10,7 @@ export default function Home() {
 
       <div className="w-full max-w-xs space-y-4">
         <Link
-          href="/new"
+          href="/layup"
           className="flex flex-col items-center justify-center gap-1 w-full min-h-[6.5rem] rounded-2xl bg-accent text-ink px-6 py-5 active:scale-[0.98]"
         >
           <span className="text-lg font-extrabold">Site Joint Layup</span>
