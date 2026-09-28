@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTimesheetStore } from "@/store/timesheet-store";
 import { usePersonnel } from "@/lib/use-personnel";
@@ -24,48 +24,9 @@ export default function TimesheetPage() {
   const { laminators, loading } = usePersonnel();
   const router = useRouter();
   const [localError, setLocalError] = useState<string | null>(null);
-  const [locating, setLocating] = useState(false);
-  const [locateError, setLocateError] = useState<string | null>(null);
 
   const todayStr = new Date().toISOString().slice(0, 10);
   const totalHours = hoursBetween(data.start_time, data.end_time);
-
-  function detectLocation() {
-    if (!("geolocation" in navigator)) {
-      setLocateError("Location isn't available on this device.");
-      return;
-    }
-    setLocating(true);
-    setLocateError(null);
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const { latitude, longitude } = pos.coords;
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
-          );
-          const json = await res.json();
-          set("site_location", json?.display_name || `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
-        } catch {
-          setLocateError("Couldn't look up the address — enter it manually.");
-        } finally {
-          setLocating(false);
-        }
-      },
-      () => {
-        setLocating(false);
-        setLocateError("Location access denied — enter the site location manually.");
-      },
-      { enableHighAccuracy: false, timeout: 8000 }
-    );
-  }
-
-  // Auto-detect once on load, only if the field is still empty (e.g. a fresh
-  // draft). Never overwrites something already typed/detected.
-  useEffect(() => {
-    if (!data.site_location) detectLocation();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   function validate(): string | null {
     if (!data.laminator_id) return "Select who this time sheet is for.";
@@ -136,26 +97,9 @@ export default function TimesheetPage() {
         placeholder="e.g. 1055"
       />
 
-      <TextField label="Client" value={data.client} onChange={(v) => set("client", v)} placeholder="e.g. Watercare" />
-
-      <div>
-        <TextField
-          label="Site Location"
-          value={data.site_location}
-          onChange={(v) => set("site_location", v)}
-          placeholder={locating ? "Detecting your location..." : "Site address"}
-        />
-        <div className="flex items-center justify-between mt-1">
-          <button
-            type="button"
-            onClick={detectLocation}
-            disabled={locating}
-            className="text-accent text-xs font-semibold disabled:opacity-50"
-          >
-            {locating ? "Locating..." : "📍 Use my current location"}
-          </button>
-        </div>
-        {locateError && <p className="text-paper/40 text-xs mt-1">{locateError}</p>}
+      <div className="grid grid-cols-2 gap-3">
+        <TextField label="Client" value={data.client} onChange={(v) => set("client", v)} placeholder="e.g. Watercare" />
+        <TextField label="Site Location" value={data.site_location} onChange={(v) => set("site_location", v)} placeholder="e.g. 12 Wharf Rd" />
       </div>
 
       <TextField
