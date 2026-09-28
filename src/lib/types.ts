@@ -52,6 +52,21 @@ export interface CapturedPhoto {
   previewUrl: string;
 }
 
+export interface TimesheetState {
+  draftId: string; // idempotency key, generated client-side once per new timesheet
+
+  laminator_id: string;
+  laminator_name: string;
+
+  job_number: string;
+  client: string;
+  description: string;
+
+  work_date: string; // YYYY-MM-DD, defaults to today, editable
+  start_time: string; // HH:MM
+  end_time: string; // HH:MM
+}
+
 export interface WizardState {
   draftId: string; // idempotency key, generated client-side once per new submission
 

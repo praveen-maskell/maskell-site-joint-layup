@@ -8,7 +8,7 @@ interface Recipient { id: string; email: string; category: string; active: boole
 export default function RecipientsAdminPage() {
   const [recipients, setRecipients] = useState<Recipient[]>([]);
   const [email, setEmail] = useState("");
-  const [category, setCategory] = useState<"qa" | "production" | "other">("qa");
+  const [category, setCategory] = useState<"qa" | "production" | "other" | "timesheet">("qa");
   const [busy, setBusy] = useState(false);
 
   async function load() {
@@ -43,7 +43,7 @@ export default function RecipientsAdminPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-xl font-bold text-paper">Email Notification Recipients</h1>
-      <p className="text-paper/50 text-sm">Every completed Site Joint record is emailed to all active recipients below.</p>
+      <p className="text-paper/50 text-sm">Every completed Site Joint record is emailed to all active qa/production/other recipients. Time Sheets are emailed only to active "timesheet" recipients below.</p>
 
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
         <h2 className="text-sm font-bold text-paper/80">Add Recipient</h2>
@@ -54,8 +54,8 @@ export default function RecipientsAdminPage() {
           type="email"
           className="w-full min-h-touch rounded-lg bg-ink border-2 border-line px-3 text-paper"
         />
-        <div className="grid grid-cols-3 gap-2">
-          {(["qa", "production", "other"] as const).map((c) => (
+        <div className="grid grid-cols-2 gap-2">
+          {(["qa", "production", "other", "timesheet"] as const).map((c) => (
             <button key={c} onClick={() => setCategory(c)} className={`min-h-touch rounded-lg border-2 font-semibold capitalize ${category === c ? "bg-accent border-accent text-ink" : "bg-ink border-line text-paper"}`}>
               {c}
             </button>
@@ -64,7 +64,7 @@ export default function RecipientsAdminPage() {
         <button disabled={busy} onClick={add} className="w-full min-h-touch rounded-lg bg-accent text-ink font-bold disabled:opacity-50">Add</button>
       </div>
 
-      {(["qa", "production", "other"] as const).map((c) => (
+      {(["qa", "production", "other", "timesheet"] as const).map((c) => (
         <div key={c}>
           <h2 className="text-sm font-bold text-paper/60 uppercase mb-2">{c}</h2>
           <div className="space-y-2">
