@@ -14,6 +14,7 @@ function emptyState(): TimesheetState {
     laminator_name: "",
     job_number: "",
     client: "",
+    site_location: "",
     description: "",
     work_date: todayISO(),
     start_time: "",

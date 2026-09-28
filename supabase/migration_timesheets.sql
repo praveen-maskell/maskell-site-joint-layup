@@ -14,6 +14,7 @@ create table if not exists public.site_timesheets (
 
   job_number text not null,
   client text,
+  site_location text,
   description text not null,
 
   work_date date not null,

@@ -44,6 +44,7 @@ export async function submitTimesheet(data: TimesheetState & { total_hours: numb
       laminator_name: data.laminator_name,
       job_number: data.job_number,
       client: data.client || null,
+      site_location: data.site_location || null,
       description: data.description,
       work_date: data.work_date,
       start_time: data.start_time,

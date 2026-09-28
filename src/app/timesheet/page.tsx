@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTimesheetStore } from "@/store/timesheet-store";
 import { usePersonnel } from "@/lib/use-personnel";
 import { TextField } from "@/components/ui/TextField";
+import { TimePicker } from "@/components/ui/TimePicker";
 import { submitTimesheet } from "@/lib/submit-timesheet";
 
 function hoursBetween(start: string, end: string): number | null {
@@ -23,9 +24,48 @@ export default function TimesheetPage() {
   const { laminators, loading } = usePersonnel();
   const router = useRouter();
   const [localError, setLocalError] = useState<string | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [locateError, setLocateError] = useState<string | null>(null);
 
   const todayStr = new Date().toISOString().slice(0, 10);
   const totalHours = hoursBetween(data.start_time, data.end_time);
+
+  function detectLocation() {
+    if (!("geolocation" in navigator)) {
+      setLocateError("Location isn't available on this device.");
+      return;
+    }
+    setLocating(true);
+    setLocateError(null);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords;
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+          );
+          const json = await res.json();
+          set("site_location", json?.display_name || `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+        } catch {
+          setLocateError("Couldn't look up the address — enter it manually.");
+        } finally {
+          setLocating(false);
+        }
+      },
+      () => {
+        setLocating(false);
+        setLocateError("Location access denied — enter the site location manually.");
+      },
+      { enableHighAccuracy: false, timeout: 8000 }
+    );
+  }
+
+  // Auto-detect once on load, only if the field is still empty (e.g. a fresh
+  // draft). Never overwrites something already typed/detected.
+  useEffect(() => {
+    if (!data.site_location) detectLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function validate(): string | null {
     if (!data.laminator_id) return "Select who this time sheet is for.";
@@ -98,6 +138,26 @@ export default function TimesheetPage() {
 
       <TextField label="Client" value={data.client} onChange={(v) => set("client", v)} placeholder="e.g. Watercare" />
 
+      <div>
+        <TextField
+          label="Site Location"
+          value={data.site_location}
+          onChange={(v) => set("site_location", v)}
+          placeholder={locating ? "Detecting your location..." : "Site address"}
+        />
+        <div className="flex items-center justify-between mt-1">
+          <button
+            type="button"
+            onClick={detectLocation}
+            disabled={locating}
+            className="text-accent text-xs font-semibold disabled:opacity-50"
+          >
+            {locating ? "Locating..." : "📍 Use my current location"}
+          </button>
+        </div>
+        {locateError && <p className="text-paper/40 text-xs mt-1">{locateError}</p>}
+      </div>
+
       <TextField
         label="Description of Work" required
         value={data.description}
@@ -119,24 +179,8 @@ export default function TimesheetPage() {
         <p className="text-paper/40 text-xs -mt-2">Defaults to today — change it if this is for a different day.</p>
 
         <div className="grid grid-cols-2 gap-3">
-          <label className="block">
-            <span className="block text-sm font-medium text-paper/80 mb-1">Start Time <span className="text-accent">*</span></span>
-            <input
-              type="time"
-              value={data.start_time}
-              onChange={(e) => set("start_time", e.target.value)}
-              className="w-full min-h-touch rounded-xl bg-ink border-2 border-line px-3 text-lg text-paper focus:border-accent focus:outline-none"
-            />
-          </label>
-          <label className="block">
-            <span className="block text-sm font-medium text-paper/80 mb-1">End Time <span className="text-accent">*</span></span>
-            <input
-              type="time"
-              value={data.end_time}
-              onChange={(e) => set("end_time", e.target.value)}
-              className="w-full min-h-touch rounded-xl bg-ink border-2 border-line px-3 text-lg text-paper focus:border-accent focus:outline-none"
-            />
-          </label>
+          <TimePicker label="Start Time" required value={data.start_time} onChange={(v) => set("start_time", v)} />
+          <TimePicker label="End Time" required value={data.end_time} onChange={(v) => set("end_time", v)} />
         </div>
 
         {totalHours !== null && (

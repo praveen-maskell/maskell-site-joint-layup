@@ -5,6 +5,7 @@ export interface TimesheetEmailData {
   laminator_name: string;
   job_number: string;
   client: string | null;
+  site_location: string | null;
   description: string;
   work_date: string;
   start_time: string;
@@ -29,6 +30,7 @@ export async function sendTimesheetEmail(d: TimesheetEmailData, recipients: stri
         ${row("Submitted By", d.laminator_name)}
         ${row("Job Number", d.job_number)}
         ${row("Client", d.client || "—")}
+        ${row("Site Location", d.site_location || "—")}
         ${row("Description of Work", d.description)}
         ${row("Work Date", d.work_date)}
         ${row("Hours", `${d.start_time} – ${d.end_time} (${d.total_hours} hrs)`)}

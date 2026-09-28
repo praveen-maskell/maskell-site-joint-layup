@@ -60,6 +60,7 @@ export interface TimesheetState {
 
   job_number: string;
   client: string;
+  site_location: string;
   description: string;
 
   work_date: string; // YYYY-MM-DD, defaults to today, editable

@@ -13,7 +13,7 @@ export default async function AdminTimesheetsPage({
 
   let query = supabase
     .from("site_timesheets")
-    .select("id, submission_id, job_number, client, laminator_name, work_date, start_time, end_time, total_hours, submitted_at, emailed_at")
+    .select("id, submission_id, job_number, client, site_location, laminator_name, work_date, start_time, end_time, total_hours, submitted_at, emailed_at")
     .order("work_date", { ascending: false })
     .order("submitted_at", { ascending: false })
     .limit(100);
@@ -44,6 +44,9 @@ export default async function AdminTimesheetsPage({
             <div className="text-paper/60 text-xs">
               {r.laminator_name} · {r.work_date} · {r.start_time}–{r.end_time}
             </div>
+            {r.site_location && (
+              <div className="text-paper/40 text-[11px]">📍 {r.site_location}</div>
+            )}
             <div className="text-paper/40 text-[11px]">
               {r.emailed_at ? "Emailed" : "Not yet emailed"} · submitted {new Date(r.submitted_at).toLocaleString("en-NZ")}
             </div>

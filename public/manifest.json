@@ -1,8 +1,8 @@
 {
   "name": "Maskell Site Joint Layup",
-  "short_name": "Site Joint",
-  "description": "Maskell Productions Ltd — Site Joint Layup QA Record",
-  "start_url": "/new",
+  "short_name": "Maskell QA",
+  "description": "Maskell Productions Ltd — Site Joint Layup QA Record & Time Sheets",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#101418",
   "theme_color": "#101418",
