@@ -14,6 +14,7 @@ create table if not exists public.site_vehicle_claims (
 
   job_number text,
   from_location text default 'Auckland',
+  site_name text,
 
   work_date date not null,
 
@@ -37,6 +38,7 @@ alter table public.site_vehicle_claims drop column if exists start_km;
 alter table public.site_vehicle_claims drop column if exists finish_km;
 alter table public.site_vehicle_claims add column if not exists job_number text;
 alter table public.site_vehicle_claims add column if not exists from_location text default 'Auckland';
+alter table public.site_vehicle_claims add column if not exists site_name text;
 
 create index if not exists idx_vehicle_claims_work_date on public.site_vehicle_claims(work_date desc);
 

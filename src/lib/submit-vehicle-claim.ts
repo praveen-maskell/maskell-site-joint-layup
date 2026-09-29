@@ -62,6 +62,7 @@ export async function submitVehicleClaim(data: VehicleClaimState) {
       laminator_name: data.laminator_name,
       job_number: data.job_number,
       from_location: data.from_location,
+      site_name: data.site_name,
       work_date: data.work_date,
       start_photo_path: startPath,
       finish_photo_path: finishPath,

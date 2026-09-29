@@ -14,6 +14,7 @@ function emptyState(): VehicleClaimState {
     laminator_name: "",
     job_number: "",
     from_location: "Auckland",
+    site_name: "",
     work_date: todayISO(),
     start_photo: null,
     finish_photo: null,

@@ -23,6 +23,7 @@ export default function VehicleClaimPage() {
     if (!data.laminator_id) return "Select who this claim is for.";
     if (!/^\d{4,5}$/.test(data.job_number.trim())) return "Job Number must be 4 or 5 digits.";
     if (!data.from_location.trim()) return "Enter where the trip started from.";
+    if (!data.site_name.trim()) return "Enter the site name.";
     if (!data.work_date) return "Select the work date.";
     if (data.work_date > todayStr) return "Work Date can't be in the future.";
     if (!data.start_photo) return "Take a photo of the start odometer reading.";
@@ -88,12 +89,20 @@ export default function VehicleClaimPage() {
         placeholder="e.g. 1055"
       />
 
-      <TextField
-        label="From" required
-        value={data.from_location}
-        onChange={(v) => set("from_location", v)}
-        placeholder="e.g. Auckland"
-      />
+      <div className="grid grid-cols-2 gap-3">
+        <TextField
+          label="From" required
+          value={data.from_location}
+          onChange={(v) => set("from_location", v)}
+          placeholder="e.g. Auckland"
+        />
+        <TextField
+          label="Site Name" required
+          value={data.site_name}
+          onChange={(v) => set("site_name", v)}
+          placeholder="e.g. Watercare Site"
+        />
+      </div>
 
       <label className="block">
         <span className="block text-sm font-medium text-paper/80 mb-1">Work Date <span className="text-accent">*</span></span>

@@ -56,6 +56,7 @@ export async function POST(req: NextRequest) {
       laminator_name: claim.laminator_name,
       job_number: claim.job_number,
       from_location: claim.from_location,
+      site_name: claim.site_name,
       work_date: claim.work_date,
       submitted_at: claim.submitted_at,
       start_photo_url: startPhotoUrl,

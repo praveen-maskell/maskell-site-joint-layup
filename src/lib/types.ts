@@ -60,6 +60,7 @@ export interface VehicleClaimState {
 
   job_number: string;
   from_location: string; // trip origin — defaults to Auckland, editable since it changes
+  site_name: string; // trip destination — the site being visited
 
   work_date: string; // YYYY-MM-DD, defaults to today, editable
 

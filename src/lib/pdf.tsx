@@ -196,6 +196,7 @@ export interface VehicleClaimPdfData {
   laminator_name: string;
   job_number: string;
   from_location: string;
+  site_name: string;
   work_date: string;
   submitted_at: string;
   start_photo_url: string;
@@ -203,7 +204,11 @@ export interface VehicleClaimPdfData {
 }
 
 const vehicleStyles = StyleSheet.create({
-  photoImgXL: { width: "100%", height: 330, objectFit: "cover", border: "1 solid #ccc" },
+  // Sized so both photos plus the details section comfortably share one A4
+  // page (previously these ran 330px tall on their own page) while staying
+  // full-width so the odometer digits are still legible.
+  photoImgLarge: { width: "100%", height: 200, objectFit: "cover", border: "1 solid #ccc" },
+  photoBlockTight: { marginBottom: 8 },
 });
 
 export function VehicleClaimPdf({ d }: { d: VehicleClaimPdfData }) {
@@ -227,24 +232,23 @@ export function VehicleClaimPdf({ d }: { d: VehicleClaimPdfData }) {
             <Field label="Submitted By" value={d.laminator_name} />
             <Field label="Job Number" value={d.job_number} />
             <Field label="From" value={d.from_location} />
+            <Field label="Site Name" value={d.site_name} />
             <Field label="Work Date" value={d.work_date} />
           </View>
         </View>
 
-        <Footer text="Personal Vehicle Usage Claim digital record — Maskell Productions Ltd" />
-      </Page>
-
-      <Page size="A4" style={styles.page}>
-        <Text style={styles.photoPageTitle}>ODOMETER PHOTOS — {d.submission_id}</Text>
-        <View style={styles.photoBlock}>
-          {/* eslint-disable-next-line jsx-a11y/alt-text */}
-          <Image src={d.start_photo_url} style={vehicleStyles.photoImgXL} />
-          <Text style={styles.photoCaptionLarge}>Start Odometer</Text>
-        </View>
-        <View style={styles.photoBlock}>
-          {/* eslint-disable-next-line jsx-a11y/alt-text */}
-          <Image src={d.finish_photo_url} style={vehicleStyles.photoImgXL} />
-          <Text style={styles.photoCaptionLarge}>Finish Odometer</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>ODOMETER PHOTOS</Text>
+          <View style={vehicleStyles.photoBlockTight}>
+            {/* eslint-disable-next-line jsx-a11y/alt-text */}
+            <Image src={d.start_photo_url} style={vehicleStyles.photoImgLarge} />
+            <Text style={styles.photoCaptionLarge}>Start Odometer</Text>
+          </View>
+          <View style={vehicleStyles.photoBlockTight}>
+            {/* eslint-disable-next-line jsx-a11y/alt-text */}
+            <Image src={d.finish_photo_url} style={vehicleStyles.photoImgLarge} />
+            <Text style={styles.photoCaptionLarge}>Finish Odometer</Text>
+          </View>
         </View>
 
         <Footer text="Personal Vehicle Usage Claim digital record — Maskell Productions Ltd" />
