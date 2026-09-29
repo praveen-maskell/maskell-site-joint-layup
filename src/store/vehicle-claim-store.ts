@@ -12,6 +12,7 @@ function emptyState(): VehicleClaimState {
     draftId: uuid(),
     laminator_id: "",
     laminator_name: "",
+    job_number: "",
     work_date: todayISO(),
     start_photo: null,
     finish_photo: null,

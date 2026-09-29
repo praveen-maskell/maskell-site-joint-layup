@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
     const pdfData: VehicleClaimPdfData = {
       submission_id: claim.submission_id,
       laminator_name: claim.laminator_name,
+      job_number: claim.job_number,
       work_date: claim.work_date,
       submitted_at: claim.submitted_at,
       start_photo_url: startPhotoUrl,

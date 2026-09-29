@@ -58,6 +58,8 @@ export interface VehicleClaimState {
   laminator_id: string;
   laminator_name: string;
 
+  job_number: string;
+
   work_date: string; // YYYY-MM-DD, defaults to today, editable
 
   start_photo: CapturedPhoto | null;

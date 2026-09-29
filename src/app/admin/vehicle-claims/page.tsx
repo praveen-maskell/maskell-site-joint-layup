@@ -7,18 +7,19 @@ export const revalidate = 0;
 export default async function AdminVehicleClaimsPage({
   searchParams,
 }: {
-  searchParams: { date?: string };
+  searchParams: { date?: string; job?: string };
 }) {
   const supabase = createServerSupabase();
 
   let query = supabase
     .from("site_vehicle_claims")
-    .select("id, submission_id, laminator_name, work_date, submitted_at, emailed_at")
+    .select("id, submission_id, job_number, laminator_name, work_date, submitted_at, emailed_at")
     .order("work_date", { ascending: false })
     .order("submitted_at", { ascending: false })
     .limit(100);
 
   if (searchParams.date) query = query.eq("work_date", searchParams.date);
+  if (searchParams.job) query = query.ilike("job_number", `%${searchParams.job}%`);
 
   const { data: records } = await query;
 
@@ -27,8 +28,9 @@ export default async function AdminVehicleClaimsPage({
       <h1 className="text-xl font-bold text-paper">Vehicle Claims</h1>
 
       <form className="grid grid-cols-2 gap-2" action="/admin/vehicle-claims">
+        <input name="job" defaultValue={searchParams.job} placeholder="Job No." className="min-h-touch rounded-lg bg-panel border-2 border-line px-3 text-paper text-sm" />
         <input name="date" type="date" defaultValue={searchParams.date} className="min-h-touch rounded-lg bg-panel border-2 border-line px-3 text-paper text-sm" />
-        <button type="submit" className="min-h-touch rounded-lg bg-accent text-ink font-bold text-sm">Search</button>
+        <button type="submit" className="col-span-2 min-h-touch rounded-lg bg-accent text-ink font-bold text-sm">Search</button>
       </form>
 
       <div className="space-y-2">
@@ -36,7 +38,7 @@ export default async function AdminVehicleClaimsPage({
         {(records ?? []).map((r) => (
           <div key={r.id} className="rounded-xl border-2 border-line bg-panel p-3 space-y-2">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-paper">{r.submission_id}</span>
+              <span className="font-semibold text-paper">{r.job_number} — {r.submission_id}</span>
             </div>
             <div className="text-paper/60 text-xs">
               {r.laminator_name} · {r.work_date}

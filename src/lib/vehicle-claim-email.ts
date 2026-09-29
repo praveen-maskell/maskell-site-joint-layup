@@ -15,6 +15,7 @@ export async function sendVehicleClaimEmail(d: VehicleClaimPdfData, recipients: 
       <p style="color:#555;margin-top:0;">${d.submission_id} · ${new Date(d.submitted_at).toLocaleString("en-NZ")}</p>
       <table style="width:100%; border-collapse:collapse; font-size:14px;">
         ${row("Submitted By", d.laminator_name)}
+        ${row("Job Number", d.job_number)}
         ${row("Work Date", d.work_date)}
       </table>
       <p style="margin-top:16px;color:#555;font-size:12px;">Odometer photos attached as PDF.</p>
@@ -24,7 +25,7 @@ export async function sendVehicleClaimEmail(d: VehicleClaimPdfData, recipients: 
   const { data, error } = await resend.emails.send({
     from: process.env.EMAIL_FROM!,
     to: recipients,
-    subject: `Personal Vehicle Usage Claim — ${d.laminator_name} — ${d.work_date}`,
+    subject: `Personal Vehicle Usage Claim — JOB ${d.job_number} — ${d.laminator_name} — ${d.work_date}`,
     html,
     attachments: [
       {

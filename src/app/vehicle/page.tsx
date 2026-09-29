@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useVehicleClaimStore } from "@/store/vehicle-claim-store";
 import { usePersonnel } from "@/lib/use-personnel";
+import { TextField } from "@/components/ui/TextField";
 import { PhotoCapture } from "@/components/ui/PhotoCapture";
 import { submitVehicleClaim } from "@/lib/submit-vehicle-claim";
 
@@ -20,6 +21,7 @@ export default function VehicleClaimPage() {
 
   function validate(): string | null {
     if (!data.laminator_id) return "Select who this claim is for.";
+    if (!/^\d{4,5}$/.test(data.job_number.trim())) return "Job Number must be 4 or 5 digits.";
     if (!data.work_date) return "Select the work date.";
     if (data.work_date > todayStr) return "Work Date can't be in the future.";
     if (!data.start_photo) return "Take a photo of the start odometer reading.";
@@ -77,6 +79,13 @@ export default function VehicleClaimPage() {
           </div>
         )}
       </div>
+
+      <TextField
+        label="Job Number" required
+        value={data.job_number}
+        onChange={(v) => set("job_number", v.replace(/\D/g, "").slice(0, 5))}
+        placeholder="e.g. 1055"
+      />
 
       <label className="block">
         <span className="block text-sm font-medium text-paper/80 mb-1">Work Date <span className="text-accent">*</span></span>

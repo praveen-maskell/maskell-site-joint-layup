@@ -194,6 +194,7 @@ export async function renderSiteJointPdf(d: SubmissionPdfData): Promise<Buffer> 
 export interface VehicleClaimPdfData {
   submission_id: string;
   laminator_name: string;
+  job_number: string;
   work_date: string;
   submitted_at: string;
   start_photo_url: string;
@@ -223,6 +224,7 @@ export function VehicleClaimPdf({ d }: { d: VehicleClaimPdfData }) {
           <Text style={styles.sectionTitle}>CLAIM DETAILS</Text>
           <View style={styles.row}>
             <Field label="Submitted By" value={d.laminator_name} />
+            <Field label="Job Number" value={d.job_number} />
             <Field label="Work Date" value={d.work_date} />
           </View>
         </View>

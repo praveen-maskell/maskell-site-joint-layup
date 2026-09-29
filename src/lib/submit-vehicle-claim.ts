@@ -60,6 +60,7 @@ export async function submitVehicleClaim(data: VehicleClaimState) {
       idempotency_key: data.draftId,
       laminator_id: data.laminator_id || null,
       laminator_name: data.laminator_name,
+      job_number: data.job_number,
       work_date: data.work_date,
       start_photo_path: startPath,
       finish_photo_path: finishPath,
