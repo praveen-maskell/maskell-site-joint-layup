@@ -59,6 +59,7 @@ export interface VehicleClaimState {
   laminator_name: string;
 
   job_number: string;
+  from_location: string; // trip origin — defaults to Auckland, editable since it changes
 
   work_date: string; // YYYY-MM-DD, defaults to today, editable
 

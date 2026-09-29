@@ -195,6 +195,7 @@ export interface VehicleClaimPdfData {
   submission_id: string;
   laminator_name: string;
   job_number: string;
+  from_location: string;
   work_date: string;
   submitted_at: string;
   start_photo_url: string;
@@ -225,6 +226,7 @@ export function VehicleClaimPdf({ d }: { d: VehicleClaimPdfData }) {
           <View style={styles.row}>
             <Field label="Submitted By" value={d.laminator_name} />
             <Field label="Job Number" value={d.job_number} />
+            <Field label="From" value={d.from_location} />
             <Field label="Work Date" value={d.work_date} />
           </View>
         </View>
