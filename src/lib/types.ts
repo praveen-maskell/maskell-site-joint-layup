@@ -60,8 +60,6 @@ export interface VehicleClaimState {
 
   work_date: string; // YYYY-MM-DD, defaults to today, editable
 
-  start_km: string;
-  finish_km: string;
   start_photo: CapturedPhoto | null;
   finish_photo: CapturedPhoto | null;
 }

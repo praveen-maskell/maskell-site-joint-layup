@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useVehicleClaimStore } from "@/store/vehicle-claim-store";
 import { usePersonnel } from "@/lib/use-personnel";
-import { NumericField } from "@/components/ui/NumericField";
 import { PhotoCapture } from "@/components/ui/PhotoCapture";
 import { submitVehicleClaim } from "@/lib/submit-vehicle-claim";
 
@@ -18,22 +17,13 @@ export default function VehicleClaimPage() {
   const [localError, setLocalError] = useState<string | null>(null);
 
   const todayStr = new Date().toISOString().slice(0, 10);
-  const startNum = parseFloat(data.start_km);
-  const finishNum = parseFloat(data.finish_km);
-  const totalKm =
-    !Number.isNaN(startNum) && !Number.isNaN(finishNum) && finishNum >= startNum
-      ? Math.round((finishNum - startNum) * 10) / 10
-      : null;
 
   function validate(): string | null {
     if (!data.laminator_id) return "Select who this claim is for.";
     if (!data.work_date) return "Select the work date.";
     if (data.work_date > todayStr) return "Work Date can't be in the future.";
-    if (!data.start_km.trim() || Number.isNaN(startNum)) return "Enter the start KMs.";
     if (!data.start_photo) return "Take a photo of the start odometer reading.";
-    if (!data.finish_km.trim() || Number.isNaN(finishNum)) return "Enter the finish KMs.";
     if (!data.finish_photo) return "Take a photo of the finish odometer reading.";
-    if (finishNum < startNum) return "Finish KMs can't be less than Start KMs.";
     return null;
   }
 
@@ -101,12 +91,6 @@ export default function VehicleClaimPage() {
 
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
         <h2 className="text-sm font-bold text-paper/80 uppercase tracking-wide">Start</h2>
-        <NumericField
-          label="Start KMs" required unit="km"
-          value={data.start_km}
-          onChange={(v) => set("start_km", v)}
-          placeholder="e.g. 45210"
-        />
         <PhotoCapture
           photoType="Start KM Odometer Photo"
           existing={data.start_photo ?? undefined}
@@ -117,12 +101,6 @@ export default function VehicleClaimPage() {
 
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
         <h2 className="text-sm font-bold text-paper/80 uppercase tracking-wide">Finish</h2>
-        <NumericField
-          label="Finish KMs" required unit="km"
-          value={data.finish_km}
-          onChange={(v) => set("finish_km", v)}
-          placeholder="e.g. 45340"
-        />
         <PhotoCapture
           photoType="Finish KM Odometer Photo"
           existing={data.finish_photo ?? undefined}
@@ -130,12 +108,6 @@ export default function VehicleClaimPage() {
           onRemove={() => setFinishPhoto(null)}
         />
       </div>
-
-      {totalKm !== null && (
-        <p className="text-paper/70 text-sm">
-          Total distance: <span className="text-accent font-semibold">{totalKm} km</span>
-        </p>
-      )}
 
       {(localError || submitError) && (
         <p className="text-bad text-sm font-medium bg-bad/10 border border-bad rounded-lg p-3">

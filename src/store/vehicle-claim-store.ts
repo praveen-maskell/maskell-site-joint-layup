@@ -13,8 +13,6 @@ function emptyState(): VehicleClaimState {
     laminator_id: "",
     laminator_name: "",
     work_date: todayISO(),
-    start_km: "",
-    finish_km: "",
     start_photo: null,
     finish_photo: null,
   };

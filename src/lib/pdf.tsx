@@ -195,9 +195,6 @@ export interface VehicleClaimPdfData {
   submission_id: string;
   laminator_name: string;
   work_date: string;
-  start_km: number;
-  finish_km: number;
-  total_km: number;
   submitted_at: string;
   start_photo_url: string;
   finish_photo_url: string;
@@ -227,9 +224,6 @@ export function VehicleClaimPdf({ d }: { d: VehicleClaimPdfData }) {
           <View style={styles.row}>
             <Field label="Submitted By" value={d.laminator_name} />
             <Field label="Work Date" value={d.work_date} />
-            <Field label="Start KMs" value={`${d.start_km} km`} />
-            <Field label="Finish KMs" value={`${d.finish_km} km`} />
-            <Field label="Total Distance" value={`${d.total_km} km`} />
           </View>
         </View>
 
@@ -241,12 +235,12 @@ export function VehicleClaimPdf({ d }: { d: VehicleClaimPdfData }) {
         <View style={styles.photoBlock}>
           {/* eslint-disable-next-line jsx-a11y/alt-text */}
           <Image src={d.start_photo_url} style={vehicleStyles.photoImgXL} />
-          <Text style={styles.photoCaptionLarge}>Start KM Odometer — {d.start_km} km</Text>
+          <Text style={styles.photoCaptionLarge}>Start Odometer</Text>
         </View>
         <View style={styles.photoBlock}>
           {/* eslint-disable-next-line jsx-a11y/alt-text */}
           <Image src={d.finish_photo_url} style={vehicleStyles.photoImgXL} />
-          <Text style={styles.photoCaptionLarge}>Finish KM Odometer — {d.finish_km} km</Text>
+          <Text style={styles.photoCaptionLarge}>Finish Odometer</Text>
         </View>
 
         <Footer text="Personal Vehicle Usage Claim digital record — Maskell Productions Ltd" />

@@ -13,9 +13,6 @@ create table if not exists public.site_vehicle_claims (
   laminator_name text not null,
 
   work_date date not null,
-  start_km numeric(10,1) not null,
-  finish_km numeric(10,1) not null,
-  total_km numeric(10,1) generated always as (finish_km - start_km) stored,
 
   start_photo_path text not null,
   finish_photo_path text not null,
@@ -24,10 +21,17 @@ create table if not exists public.site_vehicle_claims (
   emailed_at timestamptz,
 
   created_at timestamptz not null default now(),
-  submitted_at timestamptz not null default now(),
-
-  constraint finish_after_start check (finish_km >= start_km)
+  submitted_at timestamptz not null default now()
 );
+
+-- Photos only — no odometer KM entry. (If this migration is being run fresh,
+-- the table above already omits start_km/finish_km/total_km. If it's being
+-- re-run against a database created from an earlier copy of this file that
+-- still has those columns, drop them:)
+alter table public.site_vehicle_claims drop constraint if exists finish_after_start;
+alter table public.site_vehicle_claims drop column if exists total_km;
+alter table public.site_vehicle_claims drop column if exists start_km;
+alter table public.site_vehicle_claims drop column if exists finish_km;
 
 create index if not exists idx_vehicle_claims_work_date on public.site_vehicle_claims(work_date desc);
 

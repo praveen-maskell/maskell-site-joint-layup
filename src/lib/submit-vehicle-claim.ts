@@ -61,8 +61,6 @@ export async function submitVehicleClaim(data: VehicleClaimState) {
       laminator_id: data.laminator_id || null,
       laminator_name: data.laminator_name,
       work_date: data.work_date,
-      start_km: Number(data.start_km),
-      finish_km: Number(data.finish_km),
       start_photo_path: startPath,
       finish_photo_path: finishPath,
     });

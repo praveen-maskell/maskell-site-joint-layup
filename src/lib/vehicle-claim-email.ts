@@ -16,9 +16,6 @@ export async function sendVehicleClaimEmail(d: VehicleClaimPdfData, recipients: 
       <table style="width:100%; border-collapse:collapse; font-size:14px;">
         ${row("Submitted By", d.laminator_name)}
         ${row("Work Date", d.work_date)}
-        ${row("Start KMs", `${d.start_km} km`)}
-        ${row("Finish KMs", `${d.finish_km} km`)}
-        ${row("Total Distance", `${d.total_km} km`)}
       </table>
       <p style="margin-top:16px;color:#555;font-size:12px;">Odometer photos attached as PDF.</p>
     </div>
@@ -27,7 +24,7 @@ export async function sendVehicleClaimEmail(d: VehicleClaimPdfData, recipients: 
   const { data, error } = await resend.emails.send({
     from: process.env.EMAIL_FROM!,
     to: recipients,
-    subject: `Personal Vehicle Usage Claim — ${d.laminator_name} — ${d.work_date} — ${d.total_km} km`,
+    subject: `Personal Vehicle Usage Claim — ${d.laminator_name} — ${d.work_date}`,
     html,
     attachments: [
       {

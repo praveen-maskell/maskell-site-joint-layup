@@ -8,7 +8,7 @@ export default async function VehicleClaimSuccessPage({ params }: { params: { id
   const supabase = createServiceSupabase();
   const { data: claim } = await supabase
     .from("site_vehicle_claims")
-    .select("submission_id, total_km")
+    .select("submission_id")
     .eq("id", params.id)
     .single();
 
@@ -22,7 +22,6 @@ export default async function VehicleClaimSuccessPage({ params }: { params: { id
       <h1 className="text-2xl font-extrabold text-paper mb-2">CLAIM SUBMITTED</h1>
       {claim && (
         <div className="text-paper/70 space-y-1 mb-8">
-          <p>Distance: <span className="text-paper font-semibold">{claim.total_km} km</span></p>
           <p>Reference: <span className="text-accent font-semibold">{claim.submission_id}</span></p>
         </div>
       )}
