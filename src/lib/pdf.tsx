@@ -24,10 +24,10 @@ const styles = StyleSheet.create({
   footer: { position: "absolute", bottom: 20, left: 32, right: 32, fontSize: 7, color: "#888", flexDirection: "row", justifyContent: "space-between", borderTop: "1 solid #ddd", paddingTop: 4 },
 });
 
-function Footer() {
+function Footer({ text = "Form F.5.65 (1055-25) digital record — Maskell Productions Ltd QA System" }: { text?: string }) {
   return (
     <View style={styles.footer} fixed>
-      <Text>Form F.5.65 (1055-25) digital record — Maskell Productions Ltd QA System</Text>
+      <Text>{text}</Text>
       <Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
     </View>
   );
@@ -189,4 +189,72 @@ export function SiteJointPdf({ d }: { d: SubmissionPdfData }) {
 
 export async function renderSiteJointPdf(d: SubmissionPdfData): Promise<Buffer> {
   return renderToBuffer(<SiteJointPdf d={d} />);
+}
+
+export interface VehicleClaimPdfData {
+  submission_id: string;
+  laminator_name: string;
+  work_date: string;
+  start_km: number;
+  finish_km: number;
+  total_km: number;
+  submitted_at: string;
+  start_photo_url: string;
+  finish_photo_url: string;
+}
+
+const vehicleStyles = StyleSheet.create({
+  photoImgXL: { width: "100%", height: 330, objectFit: "cover", border: "1 solid #ccc" },
+});
+
+export function VehicleClaimPdf({ d }: { d: VehicleClaimPdfData }) {
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.brand}>MASKELL PRODUCTIONS LTD</Text>
+            <Text style={styles.sub}>Personal Vehicle Usage Claim</Text>
+          </View>
+          <View style={{ alignItems: "flex-end" }}>
+            <Text style={{ fontSize: 11, fontWeight: 700 }}>{d.submission_id}</Text>
+            <Text style={styles.sub}>{new Date(d.submitted_at).toLocaleString("en-NZ")}</Text>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>CLAIM DETAILS</Text>
+          <View style={styles.row}>
+            <Field label="Submitted By" value={d.laminator_name} />
+            <Field label="Work Date" value={d.work_date} />
+            <Field label="Start KMs" value={`${d.start_km} km`} />
+            <Field label="Finish KMs" value={`${d.finish_km} km`} />
+            <Field label="Total Distance" value={`${d.total_km} km`} />
+          </View>
+        </View>
+
+        <Footer text="Personal Vehicle Usage Claim digital record — Maskell Productions Ltd" />
+      </Page>
+
+      <Page size="A4" style={styles.page}>
+        <Text style={styles.photoPageTitle}>ODOMETER PHOTOS — {d.submission_id}</Text>
+        <View style={styles.photoBlock}>
+          {/* eslint-disable-next-line jsx-a11y/alt-text */}
+          <Image src={d.start_photo_url} style={vehicleStyles.photoImgXL} />
+          <Text style={styles.photoCaptionLarge}>Start KM Odometer — {d.start_km} km</Text>
+        </View>
+        <View style={styles.photoBlock}>
+          {/* eslint-disable-next-line jsx-a11y/alt-text */}
+          <Image src={d.finish_photo_url} style={vehicleStyles.photoImgXL} />
+          <Text style={styles.photoCaptionLarge}>Finish KM Odometer — {d.finish_km} km</Text>
+        </View>
+
+        <Footer text="Personal Vehicle Usage Claim digital record — Maskell Productions Ltd" />
+      </Page>
+    </Document>
+  );
+}
+
+export async function renderVehicleClaimPdf(d: VehicleClaimPdfData): Promise<Buffer> {
+  return renderToBuffer(<VehicleClaimPdf d={d} />);
 }

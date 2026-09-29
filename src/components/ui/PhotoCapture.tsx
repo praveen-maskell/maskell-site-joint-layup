@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import type { CapturedPhoto, PhotoType } from "@/lib/types";
+import type { CapturedPhoto } from "@/lib/types";
 
 export function PhotoCapture({
   photoType,
@@ -9,7 +9,7 @@ export function PhotoCapture({
   onCapture,
   onRemove,
 }: {
-  photoType: PhotoType;
+  photoType: string;
   existing: CapturedPhoto | undefined;
   onCapture: (photo: CapturedPhoto) => void;
   onRemove: () => void;

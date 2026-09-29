@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   const auth = await requireAdmin();
   if (!auth.ok) return NextResponse.json({ error: "Forbidden" }, { status: auth.status });
   const { email, category } = await req.json();
-  if (!email || !["qa", "production", "other", "timesheet"].includes(category)) {
+  if (!email || !["qa", "production", "other", "timesheet", "vehicle_claim"].includes(category)) {
     return NextResponse.json({ error: "email and valid category required" }, { status: 400 });
   }
   const { error } = await auth.supabase.from("notification_settings").insert({ email, category });

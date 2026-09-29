@@ -24,6 +24,14 @@ export default function Home() {
           <span className="text-lg font-extrabold">Time Sheet</span>
           <span className="text-sm font-medium text-paper/60">Log hours worked for the day</span>
         </Link>
+
+        <Link
+          href="/vehicle"
+          className="flex flex-col items-center justify-center gap-1 w-full min-h-[6.5rem] rounded-2xl border-2 border-line bg-panel text-paper px-6 py-5 active:scale-[0.98]"
+        >
+          <span className="text-lg font-extrabold">Vehicle Usage Claim</span>
+          <span className="text-sm font-medium text-paper/60">Log personal vehicle KMs</span>
+        </Link>
       </div>
     </div>
   );

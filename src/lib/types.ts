@@ -47,9 +47,23 @@ export interface InspectionResult {
 }
 
 export interface CapturedPhoto {
-  photo_type: PhotoType;
+  photo_type: string;
   file: File;
   previewUrl: string;
+}
+
+export interface VehicleClaimState {
+  draftId: string; // idempotency key, generated client-side once per new claim
+
+  laminator_id: string;
+  laminator_name: string;
+
+  work_date: string; // YYYY-MM-DD, defaults to today, editable
+
+  start_km: string;
+  finish_km: string;
+  start_photo: CapturedPhoto | null;
+  finish_photo: CapturedPhoto | null;
 }
 
 export interface TimesheetState {
