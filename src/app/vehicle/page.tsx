@@ -105,6 +105,7 @@ export default function VehicleClaimPage() {
           existing={data.start_photo ?? undefined}
           onCapture={setStartPhoto}
           onRemove={() => setStartPhoto(null)}
+          stampTimestamp
         />
       </div>
 
@@ -115,6 +116,7 @@ export default function VehicleClaimPage() {
           existing={data.finish_photo ?? undefined}
           onCapture={setFinishPhoto}
           onRemove={() => setFinishPhoto(null)}
+          stampTimestamp
         />
       </div>
 

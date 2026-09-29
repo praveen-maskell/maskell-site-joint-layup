@@ -3,16 +3,69 @@
 import { useRef, useState } from "react";
 import type { CapturedPhoto } from "@/lib/types";
 
+// Burns a "DD/MM/YYYY, HH:MM:SS" stamp of the moment the photo was taken/
+// picked into the bottom-left corner of the image itself, the same way a
+// dedicated timestamp-camera app would — so the evidence travels with the
+// photo (into the PDF, into a forwarded email, wherever) rather than only
+// living in a database column no one sees when looking at the image.
+async function addTimestamp(file: File): Promise<File> {
+  try {
+    const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" } as ImageBitmapOptions);
+    const canvas = document.createElement("canvas");
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0);
+
+    const stamp = new Date().toLocaleString("en-NZ", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+
+    const fontSize = Math.max(28, Math.round(canvas.width * 0.035));
+    ctx.font = `bold ${fontSize}px sans-serif`;
+    const paddingX = fontSize * 0.6;
+    const paddingY = fontSize * 0.45;
+    const bandHeight = fontSize + paddingY * 2;
+
+    ctx.fillStyle = "rgba(0,0,0,0.6)";
+    ctx.fillRect(0, canvas.height - bandHeight, canvas.width, bandHeight);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.textBaseline = "middle";
+    ctx.fillText(stamp, paddingX, canvas.height - bandHeight / 2);
+
+    const blob: Blob | null = await new Promise((resolve) =>
+      canvas.toBlob((b) => resolve(b), "image/jpeg", 0.92)
+    );
+    if (!blob) return file;
+    const stampedName = file.name.replace(/\.\w+$/, "") + "-stamped.jpg";
+    return new File([blob], stampedName, { type: "image/jpeg" });
+  } catch {
+    // Any failure (unsupported browser, decode error) — fall back to the
+    // original, unstamped file rather than blocking the submission.
+    return file;
+  }
+}
+
 export function PhotoCapture({
   photoType,
   existing,
   onCapture,
   onRemove,
+  stampTimestamp,
 }: {
   photoType: string;
   existing: CapturedPhoto | undefined;
   onCapture: (photo: CapturedPhoto) => void;
   onRemove: () => void;
+  stampTimestamp?: boolean;
 }) {
   const uploadInputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -21,11 +74,13 @@ export function PhotoCapture({
     if (!file) return;
     setBusy(true);
     try {
-      // Uploaded at full original size/quality — no client-side compression.
-      // The PDF that gets emailed uses a separately resized copy (generated
-      // server-side) so email delivery stays reliable regardless.
-      const previewUrl = URL.createObjectURL(file);
-      onCapture({ photo_type: photoType, file, previewUrl });
+      // Uploaded at full original size/quality — no client-side compression
+      // beyond the timestamp re-encode below. The PDF that gets emailed uses
+      // a separately resized copy (generated server-side) so email delivery
+      // stays reliable regardless.
+      const finalFile = stampTimestamp ? await addTimestamp(file) : file;
+      const previewUrl = URL.createObjectURL(finalFile);
+      onCapture({ photo_type: photoType, file: finalFile, previewUrl });
     } finally {
       setBusy(false);
     }
