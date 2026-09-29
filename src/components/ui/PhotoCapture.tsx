@@ -3,20 +3,35 @@
 import { useRef, useState } from "react";
 import type { CapturedPhoto } from "@/lib/types";
 
+function loadImage(objectUrl: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("Image failed to load"));
+    img.src = objectUrl;
+  });
+}
+
 // Burns a "DD/MM/YYYY, HH:MM:SS" stamp of the moment the photo was taken/
 // picked into the bottom-left corner of the image itself, the same way a
 // dedicated timestamp-camera app would — so the evidence travels with the
 // photo (into the PDF, into a forwarded email, wherever) rather than only
 // living in a database column no one sees when looking at the image.
+//
+// Uses a plain <img> + canvas rather than createImageBitmap(file, { imageOrientation })
+// — that options object throws on some browser/OS versions (an earlier
+// attempt silently fell back to "no stamp" on affected devices), whereas
+// every browser that can render an <img> tag can draw it onto a canvas.
 async function addTimestamp(file: File): Promise<File> {
+  const objectUrl = URL.createObjectURL(file);
   try {
-    const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" } as ImageBitmapOptions);
+    const img = await loadImage(objectUrl);
     const canvas = document.createElement("canvas");
-    canvas.width = bitmap.width;
-    canvas.height = bitmap.height;
+    canvas.width = img.naturalWidth || img.width;
+    canvas.height = img.naturalHeight || img.height;
     const ctx = canvas.getContext("2d");
-    if (!ctx) return file;
-    ctx.drawImage(bitmap, 0, 0);
+    if (!ctx || canvas.width === 0 || canvas.height === 0) return file;
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
     const stamp = new Date().toLocaleString("en-NZ", {
       day: "2-digit",
@@ -28,17 +43,18 @@ async function addTimestamp(file: File): Promise<File> {
       hour12: false,
     });
 
-    const fontSize = Math.max(28, Math.round(canvas.width * 0.035));
-    ctx.font = `bold ${fontSize}px sans-serif`;
+    const fontSize = Math.max(32, Math.round(canvas.width * 0.045));
+    ctx.font = `bold ${fontSize}px Arial, sans-serif`;
     const paddingX = fontSize * 0.6;
-    const paddingY = fontSize * 0.45;
+    const paddingY = fontSize * 0.5;
     const bandHeight = fontSize + paddingY * 2;
 
-    ctx.fillStyle = "rgba(0,0,0,0.6)";
+    ctx.fillStyle = "rgba(0,0,0,0.65)";
     ctx.fillRect(0, canvas.height - bandHeight, canvas.width, bandHeight);
 
     ctx.fillStyle = "#ffffff";
     ctx.textBaseline = "middle";
+    ctx.textAlign = "left";
     ctx.fillText(stamp, paddingX, canvas.height - bandHeight / 2);
 
     const blob: Blob | null = await new Promise((resolve) =>
@@ -48,9 +64,11 @@ async function addTimestamp(file: File): Promise<File> {
     const stampedName = file.name.replace(/\.\w+$/, "") + "-stamped.jpg";
     return new File([blob], stampedName, { type: "image/jpeg" });
   } catch {
-    // Any failure (unsupported browser, decode error) — fall back to the
+    // Any failure (decode error, canvas unsupported) — fall back to the
     // original, unstamped file rather than blocking the submission.
     return file;
+  } finally {
+    URL.revokeObjectURL(objectUrl);
   }
 }
 
