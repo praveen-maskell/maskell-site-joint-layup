@@ -15,6 +15,7 @@ function emptyState(): VehicleClaimState {
     job_number: "",
     from_location: "Auckland",
     site_name: "",
+    kms: "",
     work_date: todayISO(),
     start_photo: null,
     finish_photo: null,

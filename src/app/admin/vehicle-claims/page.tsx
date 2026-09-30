@@ -13,7 +13,7 @@ export default async function AdminVehicleClaimsPage({
 
   let query = supabase
     .from("site_vehicle_claims")
-    .select("id, submission_id, job_number, from_location, site_name, laminator_name, work_date, submitted_at, emailed_at")
+    .select("id, submission_id, job_number, from_location, site_name, kms, laminator_name, work_date, submitted_at, emailed_at")
     .order("work_date", { ascending: false })
     .order("submitted_at", { ascending: false })
     .limit(100);
@@ -39,6 +39,7 @@ export default async function AdminVehicleClaimsPage({
           <div key={r.id} className="rounded-xl border-2 border-line bg-panel p-3 space-y-2">
             <div className="flex justify-between items-center">
               <span className="font-semibold text-paper">{r.job_number} — {r.submission_id}</span>
+              {r.kms != null && <span className="text-accent text-sm font-mono">{r.kms} km</span>}
             </div>
             <div className="text-paper/60 text-xs">
               {r.laminator_name} · {r.work_date}

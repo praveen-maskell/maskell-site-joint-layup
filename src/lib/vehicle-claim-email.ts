@@ -18,9 +18,10 @@ export async function sendVehicleClaimEmail(d: VehicleClaimPdfData, recipients: 
         ${row("Job Number", d.job_number)}
         ${row("From", d.from_location)}
         ${row("Site Name", d.site_name)}
+        ${row("KMs", d.kms != null ? `${d.kms} km` : "—")}
         ${row("Work Date", d.work_date)}
       </table>
-      <p style="margin-top:16px;color:#555;font-size:12px;">Odometer photos attached as PDF.</p>
+      <p style="margin-top:16px;color:#555;font-size:12px;">Full details (and odometer photos, if provided) attached as PDF.</p>
     </div>
   `;
 

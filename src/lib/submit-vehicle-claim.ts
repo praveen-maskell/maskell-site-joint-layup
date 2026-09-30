@@ -21,10 +21,6 @@ export async function submitVehicleClaim(data: VehicleClaimState) {
     }
   }
 
-  if (!data.start_photo || !data.finish_photo) {
-    throw new Error("Both odometer photos are required.");
-  }
-
   const claimRecordId = uuid();
 
   function buildSerial(attempt: number): string {
@@ -34,19 +30,26 @@ export async function submitVehicleClaim(data: VehicleClaimState) {
     return attempt === 0 ? base : `${base}-${attempt + 1}`;
   }
 
-  // Upload photos first, keyed by the (already unique) claim record id, so
-  // no serial-collision retry can ever produce a duplicate storage path.
-  const startPath = `${claimRecordId}/start-${Date.now()}.jpg`;
-  const { error: startUpErr } = await supabase.storage
-    .from("vehicle-claim-photos")
-    .upload(startPath, data.start_photo.file, { contentType: data.start_photo.file.type, upsert: false });
-  if (startUpErr) throw new Error(`Start photo upload failed: ${startUpErr.message}`);
+  // Photos are optional evidence, not required — upload whichever were
+  // taken, keyed by the (already unique) claim record id, so no
+  // serial-collision retry can ever produce a duplicate storage path.
+  let startPath: string | null = null;
+  if (data.start_photo) {
+    startPath = `${claimRecordId}/start-${Date.now()}.jpg`;
+    const { error: startUpErr } = await supabase.storage
+      .from("vehicle-claim-photos")
+      .upload(startPath, data.start_photo.file, { contentType: data.start_photo.file.type, upsert: false });
+    if (startUpErr) throw new Error(`Start photo upload failed: ${startUpErr.message}`);
+  }
 
-  const finishPath = `${claimRecordId}/finish-${Date.now()}.jpg`;
-  const { error: finishUpErr } = await supabase.storage
-    .from("vehicle-claim-photos")
-    .upload(finishPath, data.finish_photo.file, { contentType: data.finish_photo.file.type, upsert: false });
-  if (finishUpErr) throw new Error(`Finish photo upload failed: ${finishUpErr.message}`);
+  let finishPath: string | null = null;
+  if (data.finish_photo) {
+    finishPath = `${claimRecordId}/finish-${Date.now()}.jpg`;
+    const { error: finishUpErr } = await supabase.storage
+      .from("vehicle-claim-photos")
+      .upload(finishPath, data.finish_photo.file, { contentType: data.finish_photo.file.type, upsert: false });
+    if (finishUpErr) throw new Error(`Finish photo upload failed: ${finishUpErr.message}`);
+  }
 
   let submissionId = buildSerial(0);
   let attempt = 0;
@@ -63,6 +66,7 @@ export async function submitVehicleClaim(data: VehicleClaimState) {
       job_number: data.job_number,
       from_location: data.from_location,
       site_name: data.site_name,
+      kms: Number(data.kms),
       work_date: data.work_date,
       start_photo_path: startPath,
       finish_photo_path: finishPath,

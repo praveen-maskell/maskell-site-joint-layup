@@ -4,7 +4,8 @@ import { createServiceSupabase } from "@/lib/supabase/server";
 import { renderVehicleClaimPdf, type VehicleClaimPdfData } from "@/lib/pdf";
 import { sendVehicleClaimEmail } from "@/lib/vehicle-claim-email";
 
-async function resizedDataUri(db: ReturnType<typeof createServiceSupabase>, path: string): Promise<string> {
+async function resizedDataUri(db: ReturnType<typeof createServiceSupabase>, path: string | null): Promise<string | null> {
+  if (!path) return null;
   const { data } = await db.storage.from("vehicle-claim-photos").createSignedUrl(path, 300);
   const signedUrl = data?.signedUrl ?? "";
   if (!signedUrl) return "";
@@ -57,6 +58,7 @@ export async function POST(req: NextRequest) {
       job_number: claim.job_number,
       from_location: claim.from_location,
       site_name: claim.site_name,
+      kms: claim.kms,
       work_date: claim.work_date,
       submitted_at: claim.submitted_at,
       start_photo_url: startPhotoUrl,

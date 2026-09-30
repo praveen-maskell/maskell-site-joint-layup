@@ -61,11 +61,12 @@ export interface VehicleClaimState {
   job_number: string;
   from_location: string; // trip origin — defaults to Auckland, editable since it changes
   site_name: string; // trip destination — the site being visited
+  kms: string; // total distance claimed
 
   work_date: string; // YYYY-MM-DD, defaults to today, editable
 
-  start_photo: CapturedPhoto | null;
-  finish_photo: CapturedPhoto | null;
+  start_photo: CapturedPhoto | null; // optional — evidence, not required
+  finish_photo: CapturedPhoto | null; // optional — evidence, not required
 }
 
 export interface TimesheetState {

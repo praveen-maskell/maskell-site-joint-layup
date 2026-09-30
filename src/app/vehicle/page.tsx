@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useVehicleClaimStore } from "@/store/vehicle-claim-store";
 import { usePersonnel } from "@/lib/use-personnel";
 import { TextField } from "@/components/ui/TextField";
+import { NumericField } from "@/components/ui/NumericField";
 import { PhotoCapture } from "@/components/ui/PhotoCapture";
 import { submitVehicleClaim } from "@/lib/submit-vehicle-claim";
 
@@ -21,13 +22,12 @@ export default function VehicleClaimPage() {
 
   function validate(): string | null {
     if (!data.laminator_id) return "Select who this claim is for.";
-    if (!/^[A-Za-z0-9]{4,5}$/.test(data.job_number.trim())) return "Job Number must be 4 or 5 characters (letters and/or digits).";
+    if (!/^[A-Za-z0-9]{2,5}$/.test(data.job_number.trim())) return "Job Number must be 2 to 5 characters (letters and/or digits).";
     if (!data.from_location.trim()) return "Enter where the trip started from.";
     if (!data.site_name.trim()) return "Enter the site name.";
+    if (!data.kms.trim() || Number.isNaN(parseFloat(data.kms))) return "Enter the KMs.";
     if (!data.work_date) return "Select the work date.";
     if (data.work_date > todayStr) return "Work Date can't be in the future.";
-    if (!data.start_photo) return "Take a photo of the start odometer reading.";
-    if (!data.finish_photo) return "Take a photo of the finish odometer reading.";
     return null;
   }
 
@@ -104,6 +104,13 @@ export default function VehicleClaimPage() {
         />
       </div>
 
+      <NumericField
+        label="KMs" required unit="km"
+        value={data.kms}
+        onChange={(v) => set("kms", v)}
+        placeholder="e.g. 42"
+      />
+
       <label className="block">
         <span className="block text-sm font-medium text-paper/80 mb-1">Work Date <span className="text-accent">*</span></span>
         <input
@@ -116,7 +123,9 @@ export default function VehicleClaimPage() {
       </label>
 
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
-        <h2 className="text-sm font-bold text-paper/80 uppercase tracking-wide">Start</h2>
+        <h2 className="text-sm font-bold text-paper/80 uppercase tracking-wide">
+          Start <span className="text-paper/40 font-normal normal-case">(optional)</span>
+        </h2>
         <PhotoCapture
           photoType="Start KM Odometer Photo"
           existing={data.start_photo ?? undefined}
@@ -127,7 +136,9 @@ export default function VehicleClaimPage() {
       </div>
 
       <div className="rounded-xl border-2 border-line bg-panel p-4 space-y-3">
-        <h2 className="text-sm font-bold text-paper/80 uppercase tracking-wide">Finish</h2>
+        <h2 className="text-sm font-bold text-paper/80 uppercase tracking-wide">
+          Finish <span className="text-paper/40 font-normal normal-case">(optional)</span>
+        </h2>
         <PhotoCapture
           photoType="Finish KM Odometer Photo"
           existing={data.finish_photo ?? undefined}

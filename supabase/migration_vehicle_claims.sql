@@ -15,11 +15,13 @@ create table if not exists public.site_vehicle_claims (
   job_number text,
   from_location text default 'Auckland',
   site_name text,
+  kms numeric(10,1),
 
   work_date date not null,
 
-  start_photo_path text not null,
-  finish_photo_path text not null,
+  -- Photos are optional evidence, not required.
+  start_photo_path text,
+  finish_photo_path text,
   pdf_storage_path text,
 
   emailed_at timestamptz,
@@ -39,6 +41,9 @@ alter table public.site_vehicle_claims drop column if exists finish_km;
 alter table public.site_vehicle_claims add column if not exists job_number text;
 alter table public.site_vehicle_claims add column if not exists from_location text default 'Auckland';
 alter table public.site_vehicle_claims add column if not exists site_name text;
+alter table public.site_vehicle_claims add column if not exists kms numeric(10,1);
+alter table public.site_vehicle_claims alter column start_photo_path drop not null;
+alter table public.site_vehicle_claims alter column finish_photo_path drop not null;
 
 create index if not exists idx_vehicle_claims_work_date on public.site_vehicle_claims(work_date desc);
 
