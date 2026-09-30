@@ -21,7 +21,7 @@ export default function VehicleClaimPage() {
 
   function validate(): string | null {
     if (!data.laminator_id) return "Select who this claim is for.";
-    if (!/^\d{4,5}$/.test(data.job_number.trim())) return "Job Number must be 4 or 5 digits.";
+    if (!/^[A-Za-z0-9]{4,5}$/.test(data.job_number.trim())) return "Job Number must be 4 or 5 characters (letters and/or digits).";
     if (!data.from_location.trim()) return "Enter where the trip started from.";
     if (!data.site_name.trim()) return "Enter the site name.";
     if (!data.work_date) return "Select the work date.";
@@ -85,7 +85,7 @@ export default function VehicleClaimPage() {
       <TextField
         label="Job Number" required
         value={data.job_number}
-        onChange={(v) => set("job_number", v.replace(/\D/g, "").slice(0, 5))}
+        onChange={(v) => set("job_number", v.replace(/[^A-Za-z0-9]/g, "").slice(0, 5).toUpperCase())}
         placeholder="e.g. 1055"
       />
 

@@ -30,7 +30,7 @@ export default function TimesheetPage() {
 
   function validate(): string | null {
     if (!data.laminator_id) return "Select who this time sheet is for.";
-    if (!/^\d{4,5}$/.test(data.job_number.trim())) return "Job Number must be 4 or 5 digits.";
+    if (!/^[A-Za-z0-9]{4,5}$/.test(data.job_number.trim())) return "Job Number must be 4 or 5 characters (letters and/or digits).";
     if (!data.description.trim()) return "Describe the work done.";
     if (!data.work_date) return "Select the work date.";
     if (data.work_date > todayStr) return "Work Date can't be in the future.";
@@ -93,7 +93,7 @@ export default function TimesheetPage() {
       <TextField
         label="Job Number" required
         value={data.job_number}
-        onChange={(v) => set("job_number", v.replace(/\D/g, "").slice(0, 5))}
+        onChange={(v) => set("job_number", v.replace(/[^A-Za-z0-9]/g, "").slice(0, 5).toUpperCase())}
         placeholder="e.g. 1055"
       />
 
